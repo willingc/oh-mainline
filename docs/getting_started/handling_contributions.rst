@@ -37,6 +37,7 @@ Test your changes
 
 
 .. _pep8: http://pypi.python.org/pypi/pep8
+.. _test suite: ../internals/continuous_integration.rst
 .. _PyChecker: http://pypi.python.org/pypi/PyChecker/0.8.12
 
 
