@@ -428,8 +428,8 @@ class Unsubscribe(TwillTests):
 
 class TimestampTests(django.test.TestCase):
 
-    def test_bugzilla_urls_get_and_update_timestamp_without_errors(self):
-        # List of URLs to test (from Bugzila trackers)
+    def test_bugzilla_get_and_update_timestamp(self):
+        # List of URLs to test (from Bugzilla trackers)
         urls = {
             'Miro bitesized':
             'http://bugzilla.pculture.org/buglist.cgi?bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&field-1-0-0=bug_status&field-1-1-0=product&field-1-2-0=keywords&keywords=bitesized&product=Miro&query_format=advanced&remaction=&type-1-0-0=anyexact&type-1-1-0=anyexact&type-1-2-0=anywords&value-1-0-0=NEW%2CASSIGNED%2CREOPENED&value-1-1-0=Miro&value-1-2-0=bitesized',

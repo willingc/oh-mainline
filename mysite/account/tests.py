@@ -66,19 +66,19 @@ class Login(TwillTests):
         client = Client()
         # All test cases should redirect to the OpenHatch root.
         # Verify existing logout still behaves as before:
-        response  = client.get('/account/logout/?next=/')
+        response = client.get('/account/logout/?next=/')
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], 'http://testserver/')
         # Verify appended redirect url is ignored:
         # Before the fix for issue 952, urlparse() redirected this url to
         # /account/logout/.
-        response  = client.get('/account/logout/?next=http://www.example.com')
+        response = client.get('/account/logout/?next=http://www.example.com')
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], 'http://testserver/')
         # Verify appended redirect url is ignored
         # Before the fix for issue 952, urlparse() redirected this url to
         # example.com.
-        response  = client.get('/account/logout/?next=http:///www.example.com')
+        response = client.get('/account/logout/?next=http:///www.example.com')
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], 'http://testserver/')
     # }}}
@@ -258,7 +258,8 @@ def photo(f):
     return filename
 
 
-@skipIf(not mysite.base.depends.Image, "Skipping photo-related tests because PIL is missing. Look in ADVANCED_INSTALLATION.mkd for information.")
+@skipIf(not mysite.base.depends.Image,
+        "Skipping photo-related tests because PIL is missing. Look in ADVANCED_INSTALLATION.mkd for information.")
 class EditPhoto(TwillTests):
     #{{{
     fixtures = ['user-paulproteus', 'person-paulproteus']
@@ -362,7 +363,8 @@ class EditPhoto(TwillTests):
     #}}}
 
 
-@skipIf(not mysite.base.depends.Image, "Skipping photo-related tests because PIL is missing. Look in ADVANCED_INSTALLATION.mkd for information.")
+@skipIf(not mysite.base.depends.Image,
+        "Skipping photo-related tests because PIL is missing. Look in ADVANCED_INSTALLATION.mkd for information.")
 class EditPhotoWithOldPerson(TwillTests):
     #{{{
     fixtures = ['user-paulproteus', 'person-paulproteus-with-blank-photo']
@@ -391,7 +393,8 @@ class GuessLocationOnLogin(TwillTests):
     # Located in Rochester, New York, U.S.A.
     mock_ip.return_value = "128.151.2.1"
 
-    @skipIf(not mysite.profile.view_helpers.geoip_city_database_available(), "Skipping because high-resolution GeoIP data not available.")
+    @skipIf(not mysite.profile.view_helpers.geoip_city_database_available(),
+            "Skipping because high-resolution GeoIP data not available.")
     @mock.patch("mysite.base.middleware.get_user_ip", mock_ip)
     def test_guess_location_on_accessing_edit_location_form(self):
         person = Person.objects.get(user__username="paulproteus")
@@ -409,7 +412,8 @@ class GuessLocationOnLogin(TwillTests):
     # Located in Rochester, New York, U.S.A.
     mock_ip.return_value = "128.151.2.1"
 
-    @skipIf(not mysite.profile.view_helpers.geoip_city_database_available(), "Skipping because high-resolution GeoIP data not available.")
+    @skipIf(not mysite.profile.view_helpers.geoip_city_database_available(),
+            "Skipping because high-resolution GeoIP data not available.")
     @mock.patch("mysite.base.middleware.get_user_ip", mock_ip)
     def test_do_not_guess_if_have_location_set(self):
         person = Person.objects.get(user__username="paulproteus")
@@ -440,7 +444,7 @@ class GuessLocationOnLogin(TwillTests):
         self.assertTrue(person.location_confirmed)
 
     def test_dont_guess_response(self):
-        person = Person.objects.get(user__username="paulproteus")
+        #person = Person.objects.get(user__username="paulproteus")
         # logging in
         client = self.login_with_client()
         # sending http request to correct page for "don't guess" response
@@ -482,7 +486,8 @@ class LoginPageContainsUnsavedAnswer(TwillTests):
         POST_data = {
             'project__pk': p.pk,
             'question__pk': q.pk,
-                'answer__text': """Help produce official documentation, share the solution to a problem, or check, proof and test other documents for accuracy.""",
+            'answer__text': """Help produce official documentation, share the solution to a problem, \
+                or check, proof and test other documents for accuracy.""",
         }
         response = self.client.post(
             reverse(mysite.project.views.create_answer_do), POST_data,

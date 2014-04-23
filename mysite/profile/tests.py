@@ -2025,8 +2025,7 @@ class BugModificationTimeVersusTimestamp(TwillTests):
         # "Recommended bugs"
         mysite.search.models.Bug.create_dummy_with_project()
         # Let's the invalidate the cache
-        mysite.profile.tasks.sync_bug_timestamp_from_model_then_fill_recommended_bugs_cache(
-        )
+        mysite.profile.tasks.sync_bug_timestamp_then_fill_bugs_cache()
         # Make sure that the cache timestamp has been updated
         new_timestamp = mysite.base.models.Timestamp.get_timestamp_for_string(
             str(mysite.search.models.Bug))

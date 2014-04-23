@@ -16,17 +16,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+import datetime
+
+import django.test
+
+from mysite.missions.base.view_helpers import *
+from mysite.missions.models import Step, StepCompletion
+from mysite.profile.models import Person
 from mysite.missions.tar.tests import *
 from mysite.missions.diffpatch.tests import *
 from mysite.missions.svn.tests import *
 from mysite.missions.git.tests import *
-import datetime
-
-
-import django.test
-from mysite.missions.base.view_helpers import *
-from mysite.missions.models import Step, StepCompletion
-from mysite.profile.models import Person
 
 
 class MissionCompletionTestCase(django.test.TestCase):

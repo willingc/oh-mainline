@@ -140,7 +140,7 @@ def fill_one_person_recommend_bugs_cache(person_id):
     recommender.recommend()  # cache fill do it.
 
 
-def sync_bug_timestamp_from_model_then_fill_recommended_bugs_cache():
+def sync_bug_timestamp_then_fill_bugs_cache():
     logging.info("Syncing bug timestamp...")
     # Find the highest bug object modified date
     from django.db.models import Max
