@@ -58,6 +58,7 @@ import mysite.customs.models
 import mysite.customs.management.commands.customs_daily_tasks
 import mysite.customs.management.commands.snapshot_public_data
 
+logger = logging.getLogger(__name__)
 
 @skipIf(mysite.base.depends.lxml.html is None, "To run these tests, you must install lxml. See ADVANCED_INSTALLATION.mkd for more.")
 class OhlohIconTests(django.test.TestCase):
@@ -583,7 +584,7 @@ class BugzillaTrackerEditingViews(TwillTests):
             'max_connections': '8',
             'bug_project_name_format': 'format'})
         if form.errors:
-            logging.info(form.errors)
+            logger.info(form.errors)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -603,7 +604,7 @@ class BugzillaTrackerEditingViews(TwillTests):
             'custom_parser': 'bugzilla.KDEBugzilla',
             'bug_project_name_format': 'format'})
         if form.errors:
-            logging.info(form.errors)
+            logger.info(form.errors)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -639,7 +640,7 @@ class BugzillaTrackerListing(TwillTests):
             'bug_project_name_format': 'format'})
 
         if form.errors:
-            logging.info(form.errors)
+            logger.info(form.errors)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -672,7 +673,7 @@ class LaunchpadTrackerEditingViews(TwillTests):
             'documentation_tag': 'doc',
             'bug_project_name_format': 'format'})
         if form.errors:
-            logging.info(form.errors)
+            logger.info(form.errors)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -702,7 +703,7 @@ class GitHubTrackerEditingViews(TwillTests):
             'max_connections': '8',
             'documentation_tag': 'doc'})
         if form.errors:
-            logging.info(form.errors)
+            logger.info(form.errors)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -756,13 +757,13 @@ class JiraTrackerEditingViews(TwillTests):
             'bug_project_name_format': 'KDE',
             'documentation_tag': 'doc'})
         if form.errors:
-            logging.info(form.errors)
+            logger.info(form.errors)
         self.assertTrue(form.is_valid())
         form.save()
 
         self.assertEqual(1,
                          mysite.customs.models.JiraTrackerModel.objects.all().select_subclasses().count())
-        self.assertEqual(2,
+        self.assertEqual(1,
                          mysite.customs.models.JiraQueryModel.objects.all().count())
 
 # Tests for importing bug data from YAML files, as emitted by oh-bugimporters

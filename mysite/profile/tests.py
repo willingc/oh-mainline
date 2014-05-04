@@ -45,6 +45,7 @@ import mock
 import os
 from twill import commands as tc
 import quopri
+import logging
 
 from django.core import mail
 from django.conf import settings
@@ -56,6 +57,7 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
+logger = logging.getLogger(__name__)
 
 class StarlingTests(TwillTests):
 

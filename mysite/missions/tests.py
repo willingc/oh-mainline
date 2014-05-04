@@ -21,13 +21,14 @@ from mysite.missions.diffpatch.tests import *
 from mysite.missions.svn.tests import *
 from mysite.missions.git.tests import *
 import datetime
-
+import logging
 
 import django.test
 from mysite.missions.base.view_helpers import *
 from mysite.missions.models import Step, StepCompletion
 from mysite.profile.models import Person
 
+logger = logging.getLogger(__name__)
 
 class MissionCompletionTestCase(django.test.TestCase):
     fixtures = ['user-paulproteus.json', 'person-paulproteus.json']

@@ -28,6 +28,7 @@ import signal
 import logging
 import mysite.base.depends
 
+logger = logging.getLogger(__name__)
 
 def generate_safe_temp_file_name():
     fd, name = tempfile.mkstemp()
@@ -72,8 +73,7 @@ class OpenHatchTestRunner(django.test.simple.DjangoTestSuiteRunner):
 
     def run_tests(self, *args, **kwargs):
         if not args or not args[0]:
-            logging.info(
-                "You did not specify which tests to run. I will run all the OpenHatch-related ones.")
+            logger.info("You did not specify which tests to run. I will run all the OpenHatch-related ones.")
             args = (['base', 'profile', 'account', 'project',
                     'missions', 'search', 'customs'],)
 
@@ -90,8 +90,7 @@ class OpenHatchXMLTestRunner(xmlrunner.extra.djangotestrunner.XMLTestRunner):
 
     def run_tests(self, *args, **kwargs):
         if not args or not args[0]:
-            logging.info(
-                "You did not specify which tests to run. I will run all the OpenHatch-related ones.")
+            logger.info("You did not specify which tests to run. I will run all the OpenHatch-related ones.")
             args = (['base', 'profile', 'account', 'project',
                     'missions', 'search', 'customs'],)
 

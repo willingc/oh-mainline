@@ -20,6 +20,7 @@ import yaml
 from django.utils import simplejson
 import logging
 
+logger = logging.getLogger(__name__)
 
 def jsonlines_decoder(f):
     for line in f:
@@ -28,8 +29,8 @@ def jsonlines_decoder(f):
         try:
             yield simplejson.loads(line)
         except Exception:
-            logging.exception("simplejson decode failed")
-            logging.error("repr(line) was: %s", repr(line))
+            logger.error("simplejson decode failed")
+            logger.error("repr(line) was: %s", repr(line))
             continue
 
 

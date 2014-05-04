@@ -4,7 +4,9 @@ from optparse import make_option
 import datetime
 import mysite.base.views
 import sys
+import logging
 
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = 'Returns the Nagios exit code for objects that are monitored'
@@ -41,8 +43,8 @@ class Command(BaseCommand):
         EIGHT_DAYS = datetime.timedelta(days=8)
 
         if ((covers_things_until - EIGHT_DAYS) < covers_things_since):
-            print "OK - Last email sent less than 8 days ago"
+            logger.debug("OK - Last email sent less than 8 days ago")
             return 0
         else:
-            print "CRITICAL - Last email sent more than 8 days ago"
+            logger.critical("CRITICAL - Last email sent more than 8 days ago")
             return 2

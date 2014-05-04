@@ -19,6 +19,7 @@
 import os.path
 import hashlib
 from itertools import cycle, islice
+import logging
 
 import pygeoip
 
@@ -29,7 +30,6 @@ import django.core.mail
 import django.core.serializers
 from django.utils import simplejson
 
-import logging
 import mysite.search.view_helpers
 import mysite.base.models
 import mysite.search.models
@@ -42,6 +42,7 @@ import mysite.base.decorators
 SUGGESTION_COUNT = 6
 DEFAULT_CACHE_TIMESPAN = 86400 * 7
 
+logger = logging.getLogger(__name__)
 
 def roundrobin(*iterables):
     "roundrobin('ABC', 'D', 'EF') --> A D E B F C"
@@ -79,7 +80,7 @@ class RecommendBugs(object):
             try:
                 bug = mysite.search.models.Bug.all_bugs.get(pk=bug_id)
             except mysite.search.models.Bug.DoesNotExist:
-                logging.info("WTF, bug missing. Whatever.")
+                logger.info("WTF, bug missing. Whatever.")
                 continue
             ret.append(bug)
         return ret
@@ -134,7 +135,7 @@ def get_geoip_guess_for_ip(ip_as_string):
             geoip_database = pygeoip.GeoIP(downloaded_geolitecity_path)
 
     if geoip_database is None:  # still?
-        logging.warn("Uh, we could not find the GeoIP database.")
+        logger.warn("Uh, we could not find the GeoIP database.")
         return False, u''
 
     # First, get the country. This works on both the GeoCountry

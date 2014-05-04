@@ -207,10 +207,10 @@ OHLOH_API_KEY = 'JeXHeaQhjXewhdktn4nUw'  # This key is called "Oman testing"
                                         # at <https://www.ohloh.net/accounts/paulproteus/api_keys>
 # OHLOH_API_KEY='0cWqe4uPw7b8Q5337ybPQ' # This key is called "API testing"
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s %(funcName)s:%(lineno)d %(levelname)-8s %(message)s',
-)
+#logging.basicConfig(
+#    level=logging.DEBUG,
+#    format='%(asctime)s %(funcName)s:%(lineno)d %(levelname)-8s %(message)s',
+#)
 
 # Invite codes last seven days
 ACCOUNT_INVITATION_DAYS = 7
@@ -303,35 +303,66 @@ djcelery.setup_loader()
 #
 # The lines relating to 'require_debug_false' should be enabled when the
 # project is upgraded to use Django 1.4.
+SITE_ROOT = "/Users/carol/projects/openhatch/oh-mainline"
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)-8s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)-8s %(message)s'
+        },
+    },
     'filters': {
-        #        'require_debug_false': {
-        #            '()': 'django.utils.log.RequireDebugFalse'
-        #        },
+        'special': {
+        }
     },
     'handlers': {
         'null': {
-            'level': 'DEBUG',
-            'class': 'django.utils.log.NullHandler',
+            'level':'CRITICAL',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level':'CRITICAL',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'logfile': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': SITE_ROOT + "/logfile",
+            'maxBytes': 100000,
+            'backupCount': 2,
+            'formatter': 'verbose',
         },
         'mail_admins': {
             'level': 'ERROR',
-            #            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['special']
+        }
     },
     'loggers': {
-        'django.db.backends': {
-            'handlers': ['null'],  # Quiet by default!
-            'propagate': False,
-            'level': 'DEBUG',
+        'django': {
+            'handlers': ['null'],
+            'propagate': True,
+            'level': 'CRITICAL',
         },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': True,
+            'propagate': False,
+        },
+        'mysite': {
+           'handlers': ['logfile'],
+           'level': 'DEBUG',
+           'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'CRITICAL',
+            'propagate': False,
         },
     }
 }

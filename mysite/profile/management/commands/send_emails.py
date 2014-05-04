@@ -30,6 +30,7 @@ import html2text
 from django.core.urlresolvers import reverse
 import mysite.profile.views
 
+logger = logging.getLogger(__name__)
 
 def push_to_end_of_list(an_object, a_list):
     try:
@@ -71,7 +72,7 @@ class Command(BaseCommand):
         # stop here and don't send any emails.
         if ((self.this_run_covers_things_up_until - self.this_run_covers_things_since) <
                 YESTERDAY):
-            logging.warn(
+            logger.warn(
                 "Not sending emails; emails were last sent within the last 24 hours.")
             return
 
@@ -92,15 +93,14 @@ class Command(BaseCommand):
         for person in people_who_want_email:
 
             if not person.user.email:
-                logging.warn("Uh, the person has no email address: %s" %
-                             person.user.username)
+                logger.warn("Uh, the person has no email address: %s" %person.user.username)
                 continue  # if the user has no email address, we skip the user.
 
             message_in_plain_text, message_in_html = self.get_projects_email_for(
                 person)
             if message_in_html:
                 count += 1
-                print "Emailing %s their project activity." % person.user.email
+                logger.debug("Emailing %s their project activity." % person.user.email)
                 email = EmailMultiAlternatives(
                     subject="News about your OpenHatch projects",
                     body=message_in_plain_text,
@@ -111,7 +111,7 @@ class Command(BaseCommand):
                     to=[person.user.email])
                 email.attach_alternative(message_in_html, "text/html")
                 email.send()
-        print "Emailed", count
+        logger.debug("Emailed %d" % count)
 
     def get_projects_email_for(self, recipient):
         context = self.get_context_for_email_to(recipient)

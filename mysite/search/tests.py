@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from mysite.base.tests import make_twill_url, TwillTests
 import mysite.base.models
 
@@ -44,6 +45,7 @@ from django.core.urlresolvers import reverse
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 
+logger = logging.getLogger(__name__)
 
 class SearchTest(TwillTests):
 
@@ -231,7 +233,7 @@ class SearchResults(TwillTests):
 
         for bug in bugs[:10]:
             tc.find(bug.description)
-            print "Found bug ", bug
+            logger.debug("Found bug %s " % bug)
 
         tc.follow(u'Next')
 

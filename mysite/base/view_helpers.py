@@ -189,6 +189,8 @@ import base64
 import os
 import random
 
+logger = logging.getLogger(__name__)
+
 notifications_dictionary = {
     "edit_password_done":
     "Your password has been changed.",
@@ -268,7 +270,7 @@ def _geocode(address=None, response_data=None):
     # address. It gets back json, which it then parses and
     # returns a string with the longitude and latitude of the address.
 
-    logging.info('Geocoding address: %s' % address)
+    logger.info('Geocoding address: %s' % address)
 
     mapsUrl = 'https://maps.googleapis.com/maps/api/geocode/json?'
 
@@ -295,12 +297,12 @@ def _geocode(address=None, response_data=None):
                     'longitude': longitude}
         return None
     except IOError:
-        logging.exception("While attempting to geocode, got an error.")
-        logging.warning(
+        logger.error("While attempting to geocode, got an error.")
+        logger.warn(
             "If you are online and still get this message, something is wrong.")
     except Exception:
         stack = traceback.extract_stack()
-        logging.debug('An error occurred: %s' % stack)
+        logger.error('An error occurred: %s' % stack)
         raise
 
 

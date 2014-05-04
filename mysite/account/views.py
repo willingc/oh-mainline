@@ -17,6 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Imports {{{
+import urllib
+import logging
+import json
+
 from django.http import HttpResponse, HttpResponseRedirect
 import django.contrib.auth
 from django.contrib.auth.decorators import login_required
@@ -28,10 +32,6 @@ from django.contrib.sessions.models import Session
 
 from invitation.forms import InvitationKeyForm
 from invitation.models import InvitationKey
-
-import urllib
-import logging
-import json
 
 import mysite.base.views
 import mysite.base.view_helpers
@@ -47,6 +47,7 @@ from mysite.base.decorators import view
 import django.contrib.auth.views
 # }}}
 
+logger = logging.getLogger(__name__)
 
 def signup_do(request):
     # {{{
@@ -115,8 +116,7 @@ def edit_photo_do(request, mock=None):
         # "cleaning" the photo during form validation.
         valid = form.is_valid()
     except Exception, e:
-            logging.error("%s while preparing the image: %s"
-                          % (str(type(e)), str(e)))
+            logger.error("%s while preparing the image: %s" %(str(type(e)), str(e)))
             # Don't pass in the form. This gives the user an empty form and a
             # nice error message, instead of the displaying the details of the
             # error.
@@ -201,7 +201,7 @@ def edit_contact_info_do(request):
         p.show_email = show_email_form.cleaned_data['show_email']
         p.save()
 
-        logging.debug('Changing email of user <%s> to <%s>' % (
+        logger.debug('Changing email of user <%s> to <%s>' % (
             request.user, edit_email_form.cleaned_data['email']))
         edit_email_form.save()
 

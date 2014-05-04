@@ -24,6 +24,7 @@ import mechanize
 import mysite.base.unicode_sanity
 import mysite.customs.models
 
+logger = logging.getLogger(__name__)
 
 def mechanize_get(url, referrer=None, attempts_remaining=6, person=None):
     """Input: Some stuff regarding a web URL to request.
@@ -65,7 +66,7 @@ def mechanize_get(url, referrer=None, attempts_remaining=6, person=None):
         # FIXME: Test with mock object.
         message_schema = "Tried to talk to %s, got %s, retrying %d more times..."
         long_message = message_schema % (url, reason, attempts_remaining)
-        logging.warn(long_message)
+        logger.warn(long_message)
 
         if person:
             short_message = message_schema % (urlparse(url).hostname,
