@@ -73,7 +73,7 @@ class OpenHatchTestRunner(django.test.simple.DjangoTestSuiteRunner):
     def run_tests(self, *args, **kwargs):
         if not args or not args[0]:
             logging.info(
-                "You did not specify which tests to run. I will run all the OpenHatch-related ones.")
+                "Running all tests. See testing docs to run a subset.")
             args = (['base', 'profile', 'account', 'project',
                     'missions', 'search', 'customs'],)
 
@@ -91,7 +91,7 @@ class OpenHatchXMLTestRunner(xmlrunner.extra.djangotestrunner.XMLTestRunner):
     def run_tests(self, *args, **kwargs):
         if not args or not args[0]:
             logging.info(
-                "You did not specify which tests to run. I will run all the OpenHatch-related ones.")
+                "Running all tests. See testing docs to run a subset.")
             args = (['base', 'profile', 'account', 'project',
                     'missions', 'search', 'customs'],)
 
