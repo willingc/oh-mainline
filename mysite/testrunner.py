@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf import settings
-import xmlrunner.extra.djangotestrunner
-import django.test.simple
 import tempfile
 import os
 import sys
@@ -26,6 +23,11 @@ import random
 import subprocess
 import signal
 import logging
+
+from django.conf import settings
+import django.test.simple
+import xmlrunner.extra.djangotestrunner
+
 import mysite.base.depends
 
 
@@ -34,17 +36,19 @@ def generate_safe_temp_file_name():
     os.close(fd)
     return name
 
-
 def override_settings_for_testing():
-    settings.SVN_REPO_PATH = tempfile.mkdtemp(
-        prefix='svn_repo_path_' +
-        datetime.datetime.now().isoformat().replace(':', '.'))
+    # Don't show logging messages while testing
+    logging.disable(logging.CRITICAL)
+
+    # Settings for github and  postmap tests
     settings.GITHUB_USERNAME = 'openhatch-api-testing'
     settings.GITHUB_API_TOKEN = '4a48b94a0f16c4483fee4cf6c46425e8'
     settings.POSTFIX_FORWARDER_TABLE_PATH = generate_safe_temp_file_name()
 
+    # Settings for SVN Subversion mission tests
+    settings.SVN_REPO_PATH = tempfile.mkdtemp(
+        prefix='svn_repo_path_' + datetime.datetime.now().isoformat().replace(':','.'))
     svnserve_port = random.randint(50000, 50100)
-
     if mysite.base.depends.svnadmin_available():
         subprocess.check_call(['svnserve',
                                '--listen-port', str(svnserve_port),

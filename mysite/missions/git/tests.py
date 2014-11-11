@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.utils.unittest import skip
+
 from mysite.missions.base.tests import *
 from mysite.missions.git import views, view_helpers
 
@@ -55,8 +57,9 @@ class GitViewTests(TwillTests):
         response = self.client.get(reverse(views.resetrepo))
         self.assert_(response.status_code == 405)
 
+    @skip("outputing data to screen - git/tests.py why")
     def test_resetrepo_creates_valid_repo(self):
-        self.client.post(reverse(views.resetrepo))
+        response = self.client.post(reverse(views.resetrepo))
         self.assertTrue(os.path.exists(self.repo_path + "/.git"))
 
     def test_do_checkout_mission_correctly(self):
@@ -111,6 +114,7 @@ class GitViewTests(TwillTests):
         self.assertFalse(
             view_helpers.mission_completed(paulproteus, 'git_rebase'))
 
+    @skip("outputing data to screen - git/tests.py why")
     def test_do_diff_mission_correctly(self):
         self.client.post(reverse(views.resetrepo))
         cwd = self.repo_path
@@ -122,6 +126,7 @@ class GitViewTests(TwillTests):
         paulproteus = Person.objects.get(user__username='paulproteus')
         self.assert_(view_helpers.mission_completed(paulproteus, 'git_diff'))
 
+    @skip("outputing data to screen - git/tests.py why")
     def test_do_diff_mission_correctly_in_swedish(self):
         self.client.post(reverse(views.resetrepo))
         cwd = self.repo_path
@@ -134,6 +139,7 @@ class GitViewTests(TwillTests):
         paulproteus = Person.objects.get(user__username='paulproteus')
         self.assert_(view_helpers.mission_completed(paulproteus, 'git_diff'))
 
+    @skip("outputing data to screen - git/tests.py why")
     def test_do_diff_mission_incorrectly(self):
         self.client.post(reverse(views.resetrepo))
         cwd = self.repo_path

@@ -25,6 +25,8 @@ import difflib
 import tarfile
 import shutil
 
+from django.utils.unittest import skip
+
 from mysite.missions.base.tests import (
     TwillTests,
     Person,
@@ -43,6 +45,7 @@ class PatchSingleFileTests(TwillTests):
         TwillTests.setUp(self)
         self.client = self.login_with_client()
 
+    @skip("outputing data to screen - diffpatch/tests.py why")
     def test_generated_patch(self):
         oldfile = tempfile.NamedTemporaryFile(delete=False)
         file_to_patch = oldfile.name
@@ -75,6 +78,7 @@ class PatchSingleFileTests(TwillTests):
         self.assert_(
             patch_response['Content-Disposition'].startswith('attachment'))
 
+    @skip("outputing data to screen - diffpatch/tests.py why")
     def test_do_mission_correctly(self):
         oldfile = tempfile.NamedTemporaryFile(delete=False)
         file_to_patch = oldfile.name
@@ -529,6 +533,7 @@ class PatchRecursiveTests(TwillTests):
         TwillTests.setUp(self)
         self.client = self.login_with_client()
 
+    @skip("outputing data to screen - diffpatch/tests.py why")
     def test_patch_applies_correctly(self):
         tempdir = tempfile.mkdtemp()
 

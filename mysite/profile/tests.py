@@ -1634,8 +1634,7 @@ class PostfixForwardersOnlyGeneratedWhenEnabledInSettings(WebTest):
         self.original_value = django.conf.settings.POSTFIX_FORWARDER_TABLE_PATH
         django.conf.settings.POSTFIX_FORWARDER_TABLE_PATH = None
 
-    @mock.patch('mysite.profile.tasks.RegeneratePostfixAliasesForForwarder.'
-                'update_table')
+    @mock.patch('mysite.profile.tasks.RegeneratePostfixAliasesForForwarder.update_table')
     def test(self, mock_update_table):
         task = mysite.profile.tasks.RegeneratePostfixAliasesForForwarder()
         task.run()

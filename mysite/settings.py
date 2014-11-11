@@ -111,7 +111,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    #     'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = [
@@ -134,7 +133,6 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-
 )
 
 STATIC_GENERATOR_URLS = (
@@ -220,8 +218,10 @@ DEFAULT_FROM_EMAIL = 'all@openhatch.org'
 # If you're testing any of the email-related features locally, make sure the 'EMAIL_*" settings here are 
 # un-commented, and then open a new terminal and type "python -m smtpd -n -c DebuggingServer localhost:1025" 
 # to run a local email server.
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_PORT = 1025
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_PORT = 1025
+
+POSTMAP_PATH = '/usr/sbin/postmap'
 
 CACHES = {
     'default': {
@@ -298,53 +298,6 @@ TRACKER_POLL_INTERVAL = 1  # Days
 
 # Inline edit permissions
 ADAPTOR_INPLACEEDIT_EDIT = 'mysite.bugsets.perms.InlineEditPermissions'
-
-# By default, Django logs all SQL queries to stderr when DEBUG=True. This turns
-# that off.  If you want to see all SQL queries (e.g., when running a
-# management command locally), remove the stanza related to django.db.backends.
-#
-# Also, this setup sends an email to the site admins on every HTTP 500 error
-# when DEBUG=False.
-#
-# The lines relating to 'require_debug_false' should be enabled when the
-# project is upgraded to use Django 1.4.
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        #        'require_debug_false': {
-        #            '()': 'django.utils.log.RequireDebugFalse'
-        #        },
-    },
-    'handlers': {
-        'null': {
-            'level': 'DEBUG',
-            'class': 'django.utils.log.NullHandler',
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': [],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-    },
-    'loggers': {
-        'django.db.backends': {
-            'handlers': ['null'],  # Quiet by default!
-            'propagate': False,
-            'level': 'DEBUG',
-        },
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'mysite': {
-            'handlers':['null'],  # Quiet for now - revisit later
-            'propagate': True,
-            'level': 'CRITICAL'      # Determine level - revisit later
-        },
-    }
-}
 
 DOWNLOADED_GEOLITECITY_PATH = os.path.join(MEDIA_ROOT,
                                            '../../downloads/GeoLiteCity.dat')
