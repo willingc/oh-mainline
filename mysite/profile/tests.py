@@ -19,6 +19,26 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import BeautifulSoup
+import datetime
+import tasks
+import mock
+import os
+import quopri
+import pprint
+import json
+
+from django.core import mail
+from django.conf import settings
+import django.test
+import django.conf
+import django.db
+from django.core import serializers
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from django.utils.unittest import skipIf
+from django_webtest import WebTest
+from django.test.client import Client
 
 from mysite.base.view_helpers import ObjectFromDict
 from mysite.base.models import Timestamp
@@ -35,29 +55,9 @@ import mysite.profile.templatetags.profile_extras
 from mysite.profile.management.commands import send_emails
 from mysite.profile import views
 from mysite.customs.models import WebResponse
-import pprint
 
-from django.utils import simplejson
-import BeautifulSoup
-import datetime
-import tasks
-import mock
-import os
-import quopri
 
-from django.core import mail
-from django.conf import settings
-import django.test
-import django.conf
-import django.db
-from django.core import serializers
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
-
-from django.utils.unittest import skipIf
-from django_webtest import WebTest
-from django.test.client import Client
-
+#from django.utils import simplejson
 
 class BasicHelpers(WebTest):
     def login_with_client(self, username='paulproteus', password="paulproteus's unbreakable password"):

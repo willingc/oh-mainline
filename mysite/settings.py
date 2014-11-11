@@ -219,9 +219,12 @@ DEFAULT_FROM_EMAIL = 'all@openhatch.org'
 # un-commented, and then open a new terminal and type "python -m smtpd -n -c DebuggingServer localhost:1025" 
 # to run a local email server.
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_PORT = 1025
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+EMAIL_PORT = 1025
 
 POSTMAP_PATH = '/usr/sbin/postmap'
+#POSTMAP_PATH = '/dev/null'
 
 CACHES = {
     'default': {
