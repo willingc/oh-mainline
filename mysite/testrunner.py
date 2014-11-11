@@ -36,9 +36,13 @@ def generate_safe_temp_file_name():
     os.close(fd)
     return name
 
-def override_settings_for_testing():
-    # Don't show logging messages while testing
-    logging.disable(logging.CRITICAL)
+def override_settings_for_testing(quiet=True):
+    if quiet is True:
+        # Don't show logging messages (unless CRITICAL) while testing
+        logging.disable(logging.CRITICAL)
+    else:
+        # Show logging messages (DEBUG and higher) while testing
+        logging.disable(logging.DEBUG)
 
     # Settings for github and  postmap tests
     settings.GITHUB_USERNAME = 'openhatch-api-testing'
@@ -74,14 +78,16 @@ def cleanup_after_tests():
 
 class OpenHatchTestRunner(django.test.simple.DjangoTestSuiteRunner):
 
-    def run_tests(self, *args, **kwargs):
+    def run_tests(self, quiet=True, *args, **kwargs):
         if not args or not args[0]:
             logging.info(
                 "You did not specify which tests to run. I will run all the OpenHatch-related ones.")
+
             args = (['base', 'profile', 'account', 'project',
                     'missions', 'search', 'customs', 'bugsets'],)
 
-        override_settings_for_testing()
+        override_settings_for_testing(quiet)
+
         n = 1
         try:
             n = super(OpenHatchTestRunner, self).run_tests(*args, **kwargs)
