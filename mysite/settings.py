@@ -1,38 +1,41 @@
 # Django settings for the basic OpenHatch 'mysite' project
+# For detailed documentation of settings:
+# See https://docs.djangoproject.com/en/dev/ref/settings/
 
-# Imports
+#### Imports
 import os
 import logging
 import datetime
 import sys
 import dj_database_url
 
-# Figure out where in the filesystem we are.
+#### Path settings
+# Determine path of the directory of settings.py file
 DIRECTORY_CONTAINING_SETTINGS_PY = os.path.abspath(os.path.dirname(__file__))
-# This is needed for {% version %}
+# Sets path needed for {% version %}
 MEDIA_ROOT_BEFORE_STATIC = DIRECTORY_CONTAINING_SETTINGS_PY
 
-# Now, actual settings
+#### Debug settings
+# Do not deploy into production with DEBUG set to True
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+#### OpenHatch site personnel settings
 ADMINS = (
     ('Asheesh Laroia', 'asheesh@openhatch.org'),
 )
-
 MANAGERS = ADMINS
 
+#### Database settings
 DATABASE_OPTIONS = {
     'read_default_file': './my.cnf',
 }
+DATABASE_CHARSET = 'utf8'        # needed for MySQL
 
 TEST_DATABASE_OPTIONS = {
     'read_default_file': './my.cnf',
 }
-
-DATABASE_CHARSET = 'utf8'           # omg I hate you MySQL
-# have to apply it to the test database, too
-TEST_DATABASE_CHARSET = 'utf8'
+TEST_DATABASE_CHARSET = 'utf8'   # needed for test db too
 
 DATABASES = {
     'default': {
@@ -64,46 +67,48 @@ if os.environ.get('USE_MYSQL', ''):
         DATABASES['default']['USER'] = 'travis'
         DATABASES['default']['PASSWORD'] = ''
 
+#### Django Sites setting
+SITE_ID = 1
+
+#### Location and datetime settings
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'America/New_York'
-
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
-
-SITE_ID = 1
-
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
 
+#### Settings for media
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(MEDIA_ROOT_BEFORE_STATIC, 'static')
-
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/static/'
-
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
 
+#### Key settings
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'k%&pic%c5%6$%(h&eynhgwhibe9-h!_iq&(@ktx#@1-5g2+he)'
 
+#### Template settings
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
+    'django.core.context_processors.tz', # Added in Django 1.4
     'django_authopenid.context_processors.authopenid',
 )
 
@@ -111,9 +116,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    #     'django.template.loaders.eggs.load_template_source',
 )
 
+TEMPLATE_DIRS = (
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+)
+
+#### Middleware settings
 MIDDLEWARE_CLASSES = [
     'django.middleware.csrf.CsrfViewMiddleware',
     # This must live on top of Auth + Session middleware
@@ -130,13 +141,8 @@ MIDDLEWARE_CLASSES = [
 
 ROOT_URLCONF = 'mysite.urls'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-
-)
-
+#### Static settings
+## TODO: check
 STATIC_GENERATOR_URLS = (
     r'^/people/',
     r'^/search/',
@@ -145,13 +151,16 @@ STATIC_GENERATOR_URLS = (
 
 STATIC_URL = '/statik/'
 
+## TODO: check
 STATIC_DOC_ROOT = 'static/'
 
+#### Sessions
 # Sessions in /tmp
-# mysite.account.view_helpers.clear_user_sessions assumes the DB backend, it
-# will not work otherwise
+# mysite.account.view_helpers.clear_user_sessions assumes the DB backend,
+# it will not work otherwise
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
+#### Installed apps
 INSTALLED_APPS = (
     'ghettoq',
     'django.contrib.auth',
@@ -186,43 +195,44 @@ INSTALLED_APPS = (
     'django_webtest',
 )
 
-# testrunner allows us to control which testrunner to use
+#### Test settings
+# Controls which testrunner to use
 TEST_RUNNER = 'mysite.testrunner.OpenHatchTestRunner'
 # Optionally, use XML reporting
 if os.environ.get('USE_XML_TEST_REPORTING', None):
     TEST_RUNNER = 'mysite.testrunner.OpenHatchXMLTestRunner'
 
-# Make test names prettier
+# TODO: check  Make test names prettier
 TEST_OUTPUT_DESCRIPTIONS = True
-
 TEST_OUTPUT_DIR = "test_output"
 
-# AMQP, Rabbit Queue
+#### AMQP, Rabbit Queue
 cooked_data_password = 'AXQaTjp3'
+# TODO: AUTH_PROFILE_MODULE deprecated in Django 1.5
+# Look into using custom User models to update
 AUTH_PROFILE_MODULE = "profile.Person"
 
+#### Login settings
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'  # Landing page
 
-OHLOH_API_KEY = 'JeXHeaQhjXewhdktn4nUw'  # This key is called "Oman testing"
-                                        # at <https://www.ohloh.net/accounts/paulproteus/api_keys>
-# OHLOH_API_KEY='0cWqe4uPw7b8Q5337ybPQ' # This key is called "API testing"
-
-
-
-# Invite codes last seven days
-ACCOUNT_INVITATION_DAYS = 7
+#### Invite code settings (TODO: Is this still used?)
+ACCOUNT_INVITATION_DAYS = 7 # Invite expires after 7 days
 INVITE_MODE = False  # Enable this on production site ...?
 INVITATIONS_PER_USER = 100
 
+#### Email settings
 DEFAULT_FROM_EMAIL = 'all@openhatch.org'
 
-# If you're testing any of the email-related features locally, make sure the 'EMAIL_*" settings here are 
-# un-commented, and then open a new terminal and type "python -m smtpd -n -c DebuggingServer localhost:1025" 
-# to run a local email server.
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_PORT = 1025
+# To test any of the email-related features locally:
+#   1. make sure the 'EMAIL_*" settings here are un-commented
+#   2. open a new terminal
+#   3. type "python -m smtpd -n -c DebuggingServer localhost:1025" 
+#      to run a local email server.
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_PORT = 1025
 
+#### Cache settings for local memory cache
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -230,9 +240,15 @@ CACHES = {
     }
 }
 
+#### Credentials for third party sites
+# Ohloh (Now OpenHub) credentials at <https://www.ohloh.net/accounts/paulproteus/api_keys>
+OHLOH_API_KEY = 'JeXHeaQhjXewhdktn4nUw'  # This key is called "Oman testing"                                       
+# OHLOH_API_KEY='0cWqe4uPw7b8Q5337ybPQ'  # This key is called "API testing"
+
 # Launchpad credentials
 LP_CREDS_BASE64_ENCODED = 'WzFdCmNvbnN1bWVyX3NlY3JldCA9IAphY2Nlc3NfdG9rZW4gPSBHV0tKMGtwYmNQTkJXOHRQMWR2Ygpjb25zdW1lcl9rZXkgPSBvcGVuaGF0Y2ggbGl2ZSBzaXRlCmFjY2Vzc19zZWNyZXQgPSBSNWtrcXBmUERiUjRiWFFQWGJIMkdoc3ZQamw2SjlOc1ZwMzViN0g2d3RjME56Q3R2Z3JKeGhNOVc5a2swU25CSnRHV1hYckdrOFFaMHZwSgoK'
 
+# GitHub credentials
 GITHUB_USERNAME = 'paulproteus'
 GITHUB_API_TOKEN = 'ceb85898146b6a0d4283cdf8788d8b6a'
 
@@ -299,22 +315,17 @@ TRACKER_POLL_INTERVAL = 1  # Days
 # Inline edit permissions
 ADAPTOR_INPLACEEDIT_EDIT = 'mysite.bugsets.perms.InlineEditPermissions'
 
-# By default, Django logs all SQL queries to stderr when DEBUG=True. This turns
-# that off.  If you want to see all SQL queries (e.g., when running a
-# management command locally), remove the stanza related to django.db.backends.
-#
-# Also, this setup sends an email to the site admins on every HTTP 500 error
-# when DEBUG=False.
-#
-# The lines relating to 'require_debug_false' should be enabled when the
-# project is upgraded to use Django 1.4.
+#### Logging settings 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        #        'require_debug_false': {
-        #            '()': 'django.utils.log.RequireDebugFalse'
-        #        },
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
     },
     'handlers': {
         'null': {
@@ -341,21 +352,22 @@ LOGGING = {
         'mysite': {
             'handlers':['null'],  # Quiet for now - revisit later
             'propagate': True,
-            'level': 'CRITICAL'      # Determine level - revisit later
+            'level': 'CRITICAL'   # Determine level - revisit later
         },
     }
 }
 
+#### GeoLiteCity
 DOWNLOADED_GEOLITECITY_PATH = os.path.join(MEDIA_ROOT,
                                            '../../downloads/GeoLiteCity.dat')
 
-
-# Windows fix-ups
+#### Windows OS specific settings
 if sys.platform.startswith('win'):
     # staticgenerator seems to act weirdly on Windows, so we disable it.
     MIDDLEWARE_CLASSES.remove(
         'mysite.base.middleware.StaticGeneratorMiddlewareOnlyWhenAnonymous')
 
+#### Bug recommendation settings
 # Enable the low-quality, high-load bug recommendation system
 RECOMMEND_BUGS = True
 
