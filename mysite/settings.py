@@ -45,7 +45,7 @@ DATABASES = {
     },
 }
 
-# Permit it to be overriden
+# Permit default database to be overriden so MySQL tests may be run
 if 'DATABASE_URL' in os.environ:
     DATABASES = {'default': dj_database_url.config()}
 
@@ -201,10 +201,6 @@ TEST_RUNNER = 'mysite.testrunner.OpenHatchTestRunner'
 # Optionally, use XML reporting
 if os.environ.get('USE_XML_TEST_REPORTING', None):
     TEST_RUNNER = 'mysite.testrunner.OpenHatchXMLTestRunner'
-
-# TODO: check  Make test names prettier
-TEST_OUTPUT_DESCRIPTIONS = True
-TEST_OUTPUT_DIR = "test_output"
 
 #### AMQP, Rabbit Queue
 cooked_data_password = 'AXQaTjp3'
