@@ -67,6 +67,11 @@ if os.environ.get('USE_MYSQL', ''):
         DATABASES['default']['USER'] = 'travis'
         DATABASES['default']['PASSWORD'] = ''
 
+# The script to invoke for management commands in this environment.
+PATH_TO_MANAGEMENT_SCRIPT = os.path.abspath(
+    os.path.join(DIRECTORY_CONTAINING_SETTINGS_PY, '../manage.py'))
+SOUTH_TESTS_MIGRATE = False
+
 #### Django Sites setting
 SITE_ID = 1
 
@@ -220,7 +225,7 @@ INVITATIONS_PER_USER = 100
 #### Email settings
 DEFAULT_FROM_EMAIL = 'all@openhatch.org'
 
-# To test any of the email-related features locally:
+# To test the email-related features locally:
 #   1. make sure the 'EMAIL_*" settings here are un-commented
 #   2. open a new terminal
 #   3. type "python -m smtpd -n -c DebuggingServer localhost:1025" 
@@ -248,8 +253,9 @@ LP_CREDS_BASE64_ENCODED = 'WzFdCmNvbnN1bWVyX3NlY3JldCA9IAphY2Nlc3NfdG9rZW4gPSBHV
 GITHUB_USERNAME = 'paulproteus'
 GITHUB_API_TOKEN = 'ceb85898146b6a0d4283cdf8788d8b6a'
 
+#### Assets settings
 # How ASSETS_DEBUG works
-# Value     Effect
+#   Value       Effect
 #   True        Don't pack assets in DEBUG mode
 #   False       Pack assets in DEBUG mode
 ASSETS_DEBUG = True
@@ -263,8 +269,10 @@ ADD_VERSION_STRING_TO_IMAGES_IN_DEBUG_MODE = True
 ASSETS_EXPIRE = 'querystring'
 WHAT_SORT_OF_IMAGE_CACHE_BUSTING = ASSETS_EXPIRE
 
+#### ip setting
 INTERNAL_IPS = ('127.0.0.1',)
 
+#### postfix and forwarder settings
 FORWARDER_DOMAIN = "forwarder.openhatch.org"
 # how long the forwarder is listed
 FORWARDER_LISTINGTIME_TIMEDELTA = datetime.timedelta(days=2)
@@ -279,12 +287,14 @@ FORWARDER_LIFETIME_TIMEDELTA = datetime.timedelta(days=10)
 #       See documentation in advanced_installation.rst for more details
 POSTFIX_FORWARDER_TABLE_PATH = None
 
+#### More cache settings
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
 WEB_ROOT = os.path.join(MEDIA_ROOT, '_cache')
 
 SERVER_NAME = 'openhatch.org'
 
+#### Subversion mission settings
 SVN_REPO_PATH = os.path.abspath(
     os.path.join(MEDIA_ROOT_BEFORE_STATIC, 'missions-userdata', 'svn'))
 
@@ -295,21 +305,11 @@ SVN_REPO_URL_PREFIX = 'file://' + SVN_REPO_PATH + '/'
 # This path is used when determining whether to run svn mission tests
 SVNADMIN_PATH = '/usr/bin/svnadmin'
 
-# The script to invoke for management commands in this environment.
-PATH_TO_MANAGEMENT_SCRIPT = os.path.abspath(
-    os.path.join(DIRECTORY_CONTAINING_SETTINGS_PY, '../manage.py'))
-SOUTH_TESTS_MIGRATE = False
-
+#### Git mission settings
 GIT_REPO_PATH = os.path.join(
     MEDIA_ROOT_BEFORE_STATIC, 'missions-userdata', 'git')
 # For local sites, this is what you clone
 GIT_REPO_URL_PREFIX = GIT_REPO_PATH + '/'
-
-# This setting is used by the customs bug importers.
-TRACKER_POLL_INTERVAL = 1  # Days
-
-# Inline edit permissions
-ADAPTOR_INPLACEEDIT_EDIT = 'mysite.bugsets.perms.InlineEditPermissions'
 
 #### Logging settings 
 LOGGING = {
@@ -362,6 +362,12 @@ if sys.platform.startswith('win'):
     # staticgenerator seems to act weirdly on Windows, so we disable it.
     MIDDLEWARE_CLASSES.remove(
         'mysite.base.middleware.StaticGeneratorMiddlewareOnlyWhenAnonymous')
+
+#### Customs bug importer settings
+# This setting is used by the customs bug importers.
+TRACKER_POLL_INTERVAL = 1  # Days
+# Inline edit permissions
+ADAPTOR_INPLACEEDIT_EDIT = 'mysite.bugsets.perms.InlineEditPermissions'
 
 #### Bug recommendation settings
 # Enable the low-quality, high-load bug recommendation system
