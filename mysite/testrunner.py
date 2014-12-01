@@ -34,17 +34,19 @@ def generate_safe_temp_file_name():
     os.close(fd)
     return name
 
-
 def override_settings_for_testing():
-    settings.SVN_REPO_PATH = tempfile.mkdtemp(
-        prefix='svn_repo_path_' +
-        datetime.datetime.now().isoformat().replace(':', '.'))
+    # Testing settings for GitHub set
     settings.GITHUB_USERNAME = 'openhatch-api-testing'
     settings.GITHUB_API_TOKEN = '4a48b94a0f16c4483fee4cf6c46425e8'
+
+    # Testing settings for postfix mail set
     settings.POSTFIX_FORWARDER_TABLE_PATH = generate_safe_temp_file_name()
 
+    # Testing settings for svn set
+    svntestpath = tempfile.mkdtemp(prefix='svn_repo_path_' +
+        datetime.datetime.now().isoformat().replace(':', '.'))
+    settings.SVN_REPO_PATH = svntestpath
     svnserve_port = random.randint(50000, 50100)
-
     if mysite.base.depends.svnadmin_available():
         subprocess.check_call(['svnserve',
                                '--listen-port', str(svnserve_port),
@@ -55,13 +57,15 @@ def override_settings_for_testing():
                                '--root', settings.SVN_REPO_PATH])
     settings.SVN_REPO_URL_PREFIX = 'svn://127.0.0.1:%d/' % svnserve_port
 
-
 def cleanup_after_tests():
+    # Clean up temporary svn test settings if svnadmin exists
     if mysite.base.depends.svnadmin_available():
         pidfile = os.path.join(settings.SVN_REPO_PATH, 'svnserve.pid')
         pid = int(open(pidfile).read().strip())
         os.kill(pid, signal.SIGTERM)
         os.unlink(pidfile)
+    
+    # Clean up postfix email test settings
     try:
         os.unlink(settings.POSTFIX_FORWARDER_TABLE_PATH)
     except IOError:
@@ -72,18 +76,18 @@ class OpenHatchTestRunner(django.test.simple.DjangoTestSuiteRunner):
 
     def run_tests(self, *args, **kwargs):
         if not args or not args[0]:
-            logging.info(
-                "You did not specify which tests to run. I will run all the OpenHatch-related ones.")
+            logging.info("Running all OpenHatch-related tests.")
             args = (['base', 'profile', 'account', 'project',
                     'missions', 'search', 'customs', 'bugsets'],)
 
         override_settings_for_testing()
-        n = 1
+        testscompleted = False
         try:
-            n = super(OpenHatchTestRunner, self).run_tests(*args, **kwargs)
+            runner = super(OpenHatchTestRunner, self)
+            testscompleted = runner.run_tests(*args, **kwargs)
         finally:
             cleanup_after_tests()
-            sys.exit(n)
+            sys.exit(testscompleted)
 
 
 class OpenHatchXMLTestRunner(xmlrunner.extra.djangotestrunner.XMLTestRunner):
@@ -96,9 +100,10 @@ class OpenHatchXMLTestRunner(xmlrunner.extra.djangotestrunner.XMLTestRunner):
                     'missions', 'search', 'customs', 'bugsets'],)
 
         override_settings_for_testing()
-        n = 1
+        testscompleted = False
         try:
-            n = super(OpenHatchXMLTestRunner, self).run_tests(*args, **kwargs)
+            runner = super(OpenHatchTestRunner, self)
+            testscompleted = runner.run_tests(*args, **kwargs)
         finally:
             cleanup_after_tests()
-            sys.exit(n)
+            sys.exit(testscompleted)
