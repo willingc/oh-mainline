@@ -26,6 +26,7 @@ import shutil
 from django.test import TestCase as DjangoTestCase
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.utils.unittest import skipIf
 
 from mysite.profile.models import Person
 from mysite.base.tests import TwillTests
@@ -33,7 +34,6 @@ from mysite.missions.base.tests import (
     TestCase, subproc_check_output, make_testdata_filename)
 from mysite.missions.svn import views
 from mysite.missions.svn import view_helpers
-from django.utils.unittest import skipIf
 import mysite.base.depends
 from mysite.missions.svn.forms import DiffForm
 

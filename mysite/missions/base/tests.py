@@ -16,18 +16,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from unittest import TestCase
-from mysite.base.tests import TwillTests
-from mysite.missions.base import views
-import mysite.missions.base.view_helpers
-from mysite.missions.models import StepCompletion, Step
-from mysite.profile.models import Person
-from mysite.base.view_helpers import subproc_check_output
-from django.conf import settings
-from django.test.client import Client
-from django.core.urlresolvers import reverse
-from django.test import TestCase as DjangoTestCase
-
 import mock
 import os
 import tarfile
@@ -37,6 +25,19 @@ import subprocess
 import difflib
 import shutil
 import random
+from unittest import TestCase
+
+from django.conf import settings
+from django.test.client import Client
+from django.core.urlresolvers import reverse
+from django.test import TestCase as DjangoTestCase
+
+from mysite.base.tests import TwillTests
+from mysite.missions.base import views
+import mysite.missions.base.view_helpers
+from mysite.missions.models import StepCompletion, Step
+from mysite.profile.models import Person
+from mysite.base.view_helpers import subproc_check_output
 
 
 def get_mission_test_data_path(mission_type):
@@ -45,11 +46,9 @@ def get_mission_test_data_path(mission_type):
     absolute_ified = os.path.abspath(new_path)
     return absolute_ified
 
-
 def make_testdata_filename(mission_type, filename):
     return os.path.join(os.path.dirname(__file__), '..', mission_type,
                         'testdata', filename)
-
 
 def list_of_true_keys(d):
     ret = []
