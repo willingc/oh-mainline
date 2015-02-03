@@ -18,27 +18,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import django.test
-from django.core.urlresolvers import reverse
-
-import twill
-from twill import commands as tc
-from django.core.handlers.wsgi import WSGIHandler
-from django.contrib.staticfiles.handlers import StaticFilesHandler
 from StringIO import StringIO
-from django.test.client import Client
 import os
 import os.path
 import subprocess
-
-from django.core.cache import cache
-from django.conf import settings
-
-import mock
 import datetime
 import logging
-from django.utils import unittest
 
+import django.test
+from django.core.urlresolvers import reverse
+from django.core.handlers.wsgi import WSGIHandler
+from django.contrib.staticfiles.handlers import StaticFilesHandler
+from django.test.client import Client
+from django.core.cache import cache
+from django.conf import settings
+from django.utils import unittest
+from django_webtest import WebTest
+
+import mock
 import mysite.base.view_helpers
 import mysite.base.decorators
 import mysite.search.models
@@ -47,7 +44,6 @@ import mysite.base.unicode_sanity
 import mysite.profile.views
 import mysite.base.views
 import mysite.project.views
-
 import mysite.base.management.commands.nagios
 import mysite.profile.management.commands.send_emails
 
@@ -129,7 +125,7 @@ class TwillTests(django.test.TestCase):
         return self.login_with_client(username='barry', password='parallelism')
 
 
-class MySQLRegex(TwillTests):
+class MySQLRegex(WebTest):
 
     def test_escape(self):
         before2after = {
@@ -143,7 +139,7 @@ class MySQLRegex(TwillTests):
                 after)
 
 
-class TestUriDataHelper(TwillTests):
+class TestUriDataHelper(WebTest):
 
     def test(self):
         request = mysite.base.view_helpers.ObjectFromDict({
@@ -156,7 +152,7 @@ class TestUriDataHelper(TwillTests):
                                 'url_prefix': 'name'})
 
 
-class GeocoderCanGeocode(TwillTests):
+class GeocoderCanGeocode(WebTest):
 
     def get_geocoding_in_json_for_unicode_string(self):
         unicode_str = u'Bark\xe5ker, T\xf8nsberg, Vestfold, Norway'
@@ -223,7 +219,7 @@ class GeocoderCanCache(django.test.TestCase):
                 + json)
 
 
-class TestUnicodifyDecorator(TwillTests):
+class TestUnicodifyDecorator(WebTest):
 
     def test(self):
         utf8_data = u'\xc3\xa9'.encode('utf-8')  # &eacute;
@@ -235,7 +231,7 @@ class TestUnicodifyDecorator(TwillTests):
         sample_thing(utf8_data)
 
 
-class Feed(TwillTests):
+class Feed(WebTest):
     fixtures = ['user-paulproteus', 'person-paulproteus']
 
     def test_feed_shows_answers(self):
@@ -282,7 +278,7 @@ class Feed(TwillTests):
         self.assert_(note_we_want_to_see in items)
 
 
-class CacheMethod(TwillTests):
+class CacheMethod(WebTest):
 
     @mock.patch('django.core.cache.cache')
     def test(self, mock_cache):
@@ -313,7 +309,7 @@ class CacheMethod(TwillTests):
             'doodles', '{"value": "1"}', 86400 * 10)
 
 
-class EnhanceNextWithNewUserMetadata(TwillTests):
+class EnhanceNextWithNewUserMetadata(WebTest):
 
     def test_easy(self):
         sample_input = '/'
@@ -339,7 +335,7 @@ class EnhanceNextWithNewUserMetadata(TwillTests):
         self.assertEqual(wanted, got)
 
 
-class Unsubscribe(TwillTests):
+class Unsubscribe(WebTest):
     fixtures = ['user-paulproteus', 'person-paulproteus']
 
     def test_verify_unsubscribe_token(self):
@@ -428,7 +424,10 @@ class Unsubscribe(TwillTests):
 class TimestampTests(django.test.TestCase):
 
     def test_bugzilla_urls_get_and_update_timestamp_without_errors(self):
-        # List of URLs to test (from Bugzila trackers)
+        """
+        Test URLs for Bugzilla bug trackers can be retrieved and
+        the timestamps can be updated.
+        """
         urls = {
             'Miro bitesized':
             'http://bugzilla.pculture.org/buglist.cgi?bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&field-1-0-0=bug_status&field-1-1-0=product&field-1-2-0=keywords&keywords=bitesized&product=Miro&query_format=advanced&remaction=&type-1-0-0=anyexact&type-1-1-0=anyexact&type-1-2-0=anywords&value-1-0-0=NEW%2CASSIGNED%2CREOPENED&value-1-1-0=Miro&value-1-2-0=bitesized',
@@ -480,10 +479,11 @@ class TimestampTests(django.test.TestCase):
                             mysite.base.models.Timestamp.ZERO_O_CLOCK)
 
 
-# Test cases for Nagios integration
 class NagiosTests(django.test.TestCase):
-    # Test for OK Nagios meta data return (0)
+    """Test cases for Nagios integration"""
+
     def test_nagios_meta_return_ok(self):
+        """Test for OK Nagios meta data return (0)"""
         data = {}
         data['bug_diagnostics'] = {}
 
@@ -495,8 +495,8 @@ class NagiosTests(django.test.TestCase):
 
         self.assertEqual(0, mysite.base.views.meta_exit_code(data))
 
-    # Test for WARNING Nagios meta data return (1)
     def test_nagios_meta_return_warning(self):
+        """Test for WARNING Nagios meta data return (1)"""
         data = {}
         data['bug_diagnostics'] = {}
 
@@ -508,8 +508,8 @@ class NagiosTests(django.test.TestCase):
 
         self.assertEqual(1, mysite.base.views.meta_exit_code(data))
 
-    # Test for CRITICAL Nagios meta data return (2)
     def test_nagios_meta_return_critical(self):
+        """Test for CRITICAL Nagios meta data return (2)"""
         data = {}
         data['bug_diagnostics'] = {}
 
@@ -521,41 +521,41 @@ class NagiosTests(django.test.TestCase):
 
         self.assertEqual(2, mysite.base.views.meta_exit_code(data))
 
-    # Test for OK Nagios weekly mail return (0)
     def test_nagios_weeklymail_return_ok(self):
+        """Test for OK Nagios weekly mail return (0)"""
         newtime = datetime.datetime.utcnow() - datetime.timedelta(days=4)
 
         self.assertEqual(0, mysite.base.management.commands.nagios.Command.
                          send_weekly_exit_code(newtime))
 
-    # Test for OK Nagios weekly mail return (0) after send_emails is
-    # run as a management command
     def test_nagios_weeklymail_return_ok_after_send(self):
-        # Run the send_mail
+        """
+        Test for OK Nagios weekly mail return (0) after send_emails is
+        run as a management command
+        """
         command = mysite.profile.management.commands.send_emails.Command()
         command.handle()
 
-        # Now run to see if the function sees things are ok in the
-        # database
         self.assertEqual(0, mysite.base.management.commands.nagios.Command.
                          send_weekly_exit_code())
 
-    # Test for CRITICAL Nagios weekly mail return (2)
     def test_nagios_weeklymail_return_critical(self):
+        """Test for CRITICAL Nagios weekly mail return (2)"""
         newtime = datetime.datetime.utcnow() - datetime.timedelta(days=8)
 
         self.assertEqual(2, mysite.base.management.commands.nagios.Command.
                          send_weekly_exit_code(newtime))
 
-    # Test for CRITICAL Nagios weekly mail return (2) on new database
     def test_nagios_weeklymail_return_critical_newdb(self):
+        """
+        Test for CRITICAL Nagios weekly mail return (2) on new database
+        """
         self.assertEqual(2, mysite.base.management.commands.nagios.Command.
                          send_weekly_exit_code())
 
 
-# Test cases for meta data generation
 class MetaDataTests(django.test.TestCase):
-
+    """Test cases for meta data generation"""
     def test_meta_data_zero_div(self):
         mysite.base.views.meta_data()
 
@@ -570,9 +570,8 @@ def find_git_path():
     raise ValueError("Could not find git directory path.")
 
 
-# Test that the git repository has no files that conflict with Windows
 class WindowsFilesystemCompatibilityTests(unittest.TestCase):
-
+    """Test that the git repository has no files that conflict with Windows"""
     def test(self):
         # Find the base directory
         dir_with_git = find_git_path()
