@@ -50,38 +50,30 @@ import mysite.profile.management.commands.send_emails
 logger = logging.getLogger(__name__)
 
 
-def make_twill_url(url):
+def make_webtest_url(url):
     # modify this
     return url.replace("http://openhatch.org/",
                        "http://127.0.0.1:8080/")
 
 
-def better_make_twill_url(url):
-    return make_twill_url(url.replace('+', '%2B'))
+def better_make_webtest_url(url):
+    return make_webtest_url(url.replace('+', '%2B'))
 
 
-def twill_goto_view(view_name, kwargs):
+def webtest_goto_view(view_name, kwargs):
     url = "http://openhatch.org" + reverse(view_name, kwargs=kwargs)
-    tc.go(better_make_twill_url(url))
+    webtest.go(better_make_webtest_url(url))
 
 mock_get = mock.Mock()
 mock_get.return_value = None
 
 
-class TwillTests(django.test.TestCase):
+class WebtestTests(django.test.TestCase):
 
     @staticmethod
-    def _twill_setup():
+    def _webtest_setup():
         app = StaticFilesHandler(WSGIHandler())
-        twill.add_wsgi_intercept("127.0.0.1", 8080, lambda: app)
-
-    @staticmethod
-    def _twill_quiet():
-        # suppress normal output of twill.. You don't want to
-        # call this if you want an interactive session
-        twill.set_output(StringIO())
-
-    '''Some basic methods needed by other testing classes.'''
+        webtest.add_wsgi_intercept("127.0.0.1", 8080, lambda: app)
 
     def setUp(self):
         self.real_get = django.core.cache.cache.get
@@ -89,22 +81,21 @@ class TwillTests(django.test.TestCase):
         from django.conf import settings
         self.old_dbe = settings.DEBUG_PROPAGATE_EXCEPTIONS
         settings.DEBUG_PROPAGATE_EXCEPTIONS = True
-        TwillTests._twill_setup()
-        TwillTests._twill_quiet()
+        WebtestTests._webtest_setup()
 
     def tearDown(self):
         # If you get an error on one of these lines,
         # maybe you didn't run base.TwillTests.setUp?
         from django.conf import settings
         settings.DEBUG_PROPAGATE_EXCEPTIONS = self.old_dbe
-        twill.remove_wsgi_intercept('127.0.0.1', 8080)
-        tc.reset_browser()
+        webtest.remove_wsgi_intercept('127.0.0.1', 8080)
+        webtest.reset_browser()
         django.core.cache.cache.get = self.real_get
 
-    def login_with_twill(self):
+    def login_with_webtest(self):
         # Visit login page
         login_url = 'http://openhatch.org/account/login/old'
-        tc.go(make_twill_url(login_url))
+        webtest.go(make_webtest_url(login_url))
 
         # Log in
         username = "paulproteus"
@@ -264,7 +255,7 @@ class Feed(WebTest):
         person = mysite.profile.models.Person.objects.get(
             user__username='paulproteus')
         p_before = mysite.search.models.Project.create_dummy()
-        client = self.login_with_client()
+        client = WebtestTests.login_with_client()
         post_to = reverse(mysite.project.views.wanna_help_do)
         response = client.post(post_to, {u'project': unicode(p_before.pk)})
 
@@ -415,9 +406,9 @@ class Unsubscribe(WebTest):
 
         # Generate a valid token
         valid_token_string = dude.generate_new_unsubscribe_token().string
-        twill_goto_view(mysite.profile.views.unsubscribe,
+        webtest_goto_view(mysite.profile.views.unsubscribe,
                         kwargs={'token_string': valid_token_string})
-        tc.submit()
+        WebtestTests.submit()
         self.assertFalse(get_dude().email_me_re_projects)
 
 
