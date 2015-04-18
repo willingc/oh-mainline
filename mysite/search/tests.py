@@ -107,24 +107,24 @@ class TestThatQueryTokenizesRespectingQuotationMarks(WebTest):
         self.assertEqual(num_bugs, 1)
 
 
-# class SearchResults(TwillTests):
-#     fixtures = [u'bugs-for-two-projects.json']
+class SearchResults(WebTest):
+    fixtures = [u'bugs-for-two-projects.json']
 
-#     @skipIf(django.db.connection.vendor == 'sqlite',
-#             "Skipping because using sqlite database")
-#     def test_query_object_is_false_when_no_terms_or_facets(self):
-#         query = mysite.search.view_helpers.Query.create_from_GET_data({})
-#         self.assertFalse(query)
+    @skipIf(django.db.connection.vendor == 'sqlite',
+            "Skipping because using sqlite database")
+    def test_query_object_is_false_when_no_terms_or_facets(self):
+        query = mysite.search.view_helpers.Query.create_from_GET_data({})
+        self.assertFalse(query)
 
-#     @skipIf(django.db.connection.vendor == 'sqlite',
-#             "Skipping because using sqlite database")
-#     def test_show_no_bugs_if_no_query(self):
-#         # Call up search page with no query.
-#         response = self.client.get(u'/search/')
+    @skipIf(django.db.connection.vendor == 'sqlite',
+            "Skipping because using sqlite database")
+    def test_show_no_bugs_if_no_query(self):
+        # Call up search page with no query.
+        response = self.client.get(u'/search/')
 
-#         # The variable u'bunch_of_bugs', passed to the template, is a blank
-#         # list.
-#         self.assertEqual(response.context[0][u'bunch_of_bugs'], [])
+        # The variable u'bunch_of_bugs', passed to the template, is a blank
+        # list.
+        self.assertEqual(response.context[0][u'bunch_of_bugs'], [])
 
 #     @skipIf(django.db.connection.vendor == 'sqlite',
 #             "Skipping because using sqlite database")
@@ -245,75 +245,75 @@ class SplitIntoTerms(TestCase):
             ['c#'])
 
 
-# class IconGetsScaled(SearchTest):
+class IconGetsScaled(SearchTest):
 
-#     @skipIf(not mysite.base.depends.Image, ("Skipping this test. Install PIL "
-#                                             "to run it; see "
-#                                             "ADVANCED_INSTALLATION.mkd."))
-#     def test_project_scales_its_icon_down_for_use_in_badge(self):
-#         '''This test shows that the Project class successfully stores
-#         a scaled-down version of its icon in the icon_smaller_for_badge
-#         field.'''
+    @skipIf(not mysite.base.depends.Image, ("Skipping this test. Install PIL "
+                                            "to run it; see "
+                                            "ADVANCED_INSTALLATION.mkd."))
+    def test_project_scales_its_icon_down_for_use_in_badge(self):
+        '''This test shows that the Project class successfully stores
+        a scaled-down version of its icon in the icon_smaller_for_badge
+        field.'''
 
-#         # Step 1: Create a project with an icon
-#         p = mysite.search.models.Project.create_dummy()
-#         image_data = open(
-#             mysite.account.tests.photo('static/sample-photo.png')).read()
-#         p.icon_raw.save('', ContentFile(image_data))
-#         p.save()
+        # Step 1: Create a project with an icon
+        p = mysite.search.models.Project.create_dummy()
+        image_data = open(
+            mysite.account.tests.photo('static/sample-photo.png')).read()
+        p.icon_raw.save('', ContentFile(image_data))
+        p.save()
 
-#         # Assertion 1: p.icon_smaller_for_badge is false (since not scaled yet)
-#         self.assertFalse(p.icon_smaller_for_badge)
+        # Assertion 1: p.icon_smaller_for_badge is false (since not scaled yet)
+        self.assertFalse(p.icon_smaller_for_badge)
 
-#         # Step 2: Call the scaling method
-#         p.update_scaled_icons_from_self_icon()
-#         p.save()
+        # Step 2: Call the scaling method
+        p.update_scaled_icons_from_self_icon()
+        p.save()
 
-#         # Assertion 2: Verify that it is now a true value
-#         self.assert_(p.icon_smaller_for_badge,
-#                      "Expected p.icon_smaller_for_badge to be a true value.")
+        # Assertion 2: Verify that it is now a true value
+        self.assert_(p.icon_smaller_for_badge,
+                     "Expected p.icon_smaller_for_badge to be a true value.")
 
-#         # Assertion 3: Verify that it has the right width
-#         self.assertEqual(
-#             p.icon_smaller_for_badge.width, 40,
-#             "Expected p.icon_smaller_for_badge to be 40 pixels wide.")
+        # Assertion 3: Verify that it has the right width
+        self.assertEqual(
+            p.icon_smaller_for_badge.width, 40,
+            "Expected p.icon_smaller_for_badge to be 40 pixels wide.")
 
-#     @skipIf(not mysite.base.depends.Image, ("Skipping this test. Install PIL "
-#                                             "to run it; see "
-#                                             "ADVANCED_INSTALLATION.mkd."))
-#     def test_short_icon_is_scaled_correctly(self):
-#         '''Sometimes icons are rectangular and more wide than long. These
-#         icons shouldn't be trammeled into a square, but scaled respectfully
-#         of their original ratios.'''
-#         # Step 1: Create a project with an icon
-#         p = mysite.search.models.Project.create_dummy()
+    @skipIf(not mysite.base.depends.Image, ("Skipping this test. Install PIL "
+                                            "to run it; see "
+                                            "ADVANCED_INSTALLATION.mkd."))
+    def test_short_icon_is_scaled_correctly(self):
+        '''Sometimes icons are rectangular and more wide than long. These
+        icons shouldn't be trammeled into a square, but scaled respectfully
+        of their original ratios.'''
+        # Step 1: Create a project with an icon
+        p = mysite.search.models.Project.create_dummy()
 
-#         # account.tests.photo finds the right path.
-#         image_data = open(mysite.account.tests.photo(
-#             'static/images/icons/test-project-icon-64px-by-18px.png')).read()
-#         p.icon_raw.save('', ContentFile(image_data))
-#         p.save()
+        # account.tests.photo finds the right path.
+        image_data = open(mysite.account.tests.photo(
+            'static/images/icons/test-project-icon-64px-by-18px.png')).read()
+        p.icon_raw.save('', ContentFile(image_data))
+        p.save()
 
-#         # Assertion 1: p.icon_smaller_for_badge is false (since not scaled yet)
-#         self.assertFalse(p.icon_smaller_for_badge)
+        # Assertion 1: p.icon_smaller_for_badge is false (since not scaled yet)
+        self.assertFalse(p.icon_smaller_for_badge)
 
-#         # Step 2: Call the scaling method
-#         p.update_scaled_icons_from_self_icon()
-#         p.save()
+        # Step 2: Call the scaling method
+        p.update_scaled_icons_from_self_icon()
+        p.save()
 
-#         # Assertion 2: Verify that it is now a true value
-#         self.assert_(p.icon_smaller_for_badge,
-#                      "Expected p.icon_smaller_for_badge to be a true value.")
+        # Assertion 2: Verify that it is now a true value
+        self.assert_(p.icon_smaller_for_badge,
+                     "Expected p.icon_smaller_for_badge to be a true value.")
 
-#         # Assertion 3: Verify that it has the right width
-#         self.assertEqual(
-#             p.icon_smaller_for_badge.width, 40,
-#             "Expected p.icon_smaller_for_badge to be 40 pixels wide.")
+        # Assertion 3: Verify that it has the right width
+        self.assertEqual(
+            p.icon_smaller_for_badge.width, 40,
+            "Expected p.icon_smaller_for_badge to be 40 pixels wide.")
 
-#         # Assertion 3: Verify that it has the right height
-#         # If we want to scale exactly we'll get 11.25 pixels, which rounds to
-#         # 11.
-#         self.assertEqual(p.icon_smaller_for_badge.height, 11)
+        # Assertion 3: Verify that it has the right height
+        # If we want to scale exactly we'll get 11.25 pixels, which rounds to
+        # 11.
+        self.assertEqual(p.icon_smaller_for_badge.height, 11)
 
 
 class SearchOnFullWords(SearchTest):
@@ -554,9 +554,9 @@ class SingleFacetOption(SearchTest):
 
     def setUp(self):
         SearchTest.setUp(self)
-        python_project = Project.create_dummy(language='Python')
-        perl_project = Project.create_dummy(language='Perl')
-        c_project = Project.create_dummy(language='C')
+        python_project = Project.create_dummy(language=u'Python')
+        perl_project = Project.create_dummy(language=u'Perl')
+        c_project = Project.create_dummy(language=u'C')
 
         # bitesize, matching bug in Python
         Bug.create_dummy(project=python_project, good_for_newcomers=True,
@@ -819,73 +819,69 @@ class QueryContributionType(SearchTest):
         self.assertEqual(any_one[u'count'], 3)
 
 
-# class QueryProject(SearchTest):
+class QueryProject(SearchTest):
 
-#     def setUp(self):
-#         SearchTest.setUp(self)
-#         python_project = Project.create_dummy(language=u'Python',
-#                                               name='thingamajig')
-#         c_project = Project.create_dummy(language=u'C',
-#                                          name='thingamabob')
+    def setUp(self):
+        SearchTest.setUp(self)
+        python_project = Project.create_dummy(language=u'Python', name=u'thingamajig')
+        c_project = Project.create_dummy(language=u'C', name=u'thingamabob')
 
-#         Bug.create_dummy(project=python_project, title=u'a')
-#         Bug.create_dummy(project=python_project, title=u'a',
-#                          concerns_just_documentation=True)
-#         Bug.create_dummy(project=c_project, title=u'b')
+        Bug.create_dummy(project=python_project, title=u'a')
+        Bug.create_dummy(project=python_project, title=u'a', concerns_just_documentation=True)
+        Bug.create_dummy(project=c_project, title=u'b')
 
-#     def test_project_is_an_available_facet(self):
-#         GET_data = {}
-#         starting_query = mysite.search.view_helpers.Query.create_from_GET_data(
-#             GET_data)
-#         self.assert_(u'project' in dict(starting_query.get_possible_facets()))
+    def test_project_is_an_available_facet(self):
+        GET_data = {}
+        starting_query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        self.assert_(u'project' in dict(starting_query.get_possible_facets()))
 
-#     def test_contribution_type_options_are_reasonable(self):
-#         GET_data = {}
-#         starting_query = mysite.search.view_helpers.Query.create_from_GET_data(
-#             GET_data)
-#         cto = starting_query.get_facet_options(u'project',
-#                                                [u'thingamajig',
-#                                                 u'thingamabob'])
-#         jig_ones, = [k for k in cto if k[u'name'] == u'thingamajig']
-#         any_one = starting_query.get_facet_options(u'project', [u''])[0]
-#         self.assertEqual(jig_ones[u'count'], 2)
-#         self.assertEqual(any_one[u'count'], 3)
+    def test_contribution_type_options_are_reasonable(self):
+        GET_data = {}
+        starting_query = mysite.search.view_helpers.Query.create_from_GET_data(
+            GET_data)
+        cto = starting_query.get_facet_options(u'project',
+                                               [u'thingamajig',
+                                                u'thingamabob'])
+        jig_ones, = [k for k in cto if k[u'name'] == u'thingamajig']
+        any_one = starting_query.get_facet_options(u'project', [u''])[0]
+        self.assertEqual(jig_ones[u'count'], 2)
+        self.assertEqual(any_one[u'count'], 3)
 
 
-# class QueryStringCaseInsensitive(SearchTest):
+class QueryStringCaseInsensitive(SearchTest):
 
-#     def test_Language(self):
-#         """Do we redirect queries that use non-lowercase facet keys to pages
-#         that use lowercase facet keys?"""
-#         redirects = self.client.get(
-#             u'/search/', {u'LANguaGE': u'pytHon'}, follow=True).redirect_chain
-#         self.assertEqual(
-#             redirects, [(u'http://testserver/search/?language=pytHon', 302)])
+    def test_Language(self):
+        """Do we redirect queries that use non-lowercase facet keys to pages
+        that use lowercase facet keys?"""
+        redirects = self.client.get(
+            u'/search/', {u'LANguaGE': u'pytHon'}, follow=True).redirect_chain
+        self.assertEqual(
+            redirects, [(u'http://testserver/search/?language=pytHon', 302)])
 
 
-# class HashQueryData(SearchTest):
+class HashQueryData(SearchTest):
 
-#     def test_queries_with_identical_data_hash_alike(self):
-#         GET_data = {u'q': u'socialguides', u'language': u'looxii'}
-#         one = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         two = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         self.assertEqual(one.get_sha1(), two.get_sha1())
+    def test_queries_with_identical_data_hash_alike(self):
+        GET_data = {u'q': u'socialguides', u'language': u'looxii'}
+        one = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        two = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        self.assertEqual(one.get_sha1(), two.get_sha1())
 
-#     def test_queries_with_equiv_data_expressed_differently_hash_alike(self):
-#         GET_data_1 = {u'q': u'socialguides zetapage', u'language': u'looxii'}
-#         GET_data_2 = {u'q': u'zetapage socialguides', u'language': u'looxii'}
-#         one = mysite.search.view_helpers.Query.create_from_GET_data(GET_data_1)
-#         two = mysite.search.view_helpers.Query.create_from_GET_data(GET_data_2)
-#         self.assertEqual(one.get_sha1(), two.get_sha1())
+    def test_queries_with_equiv_data_expressed_differently_hash_alike(self):
+        GET_data_1 = {u'q': u'socialguides zetapage', u'language': u'looxii'}
+        GET_data_2 = {u'q': u'zetapage socialguides', u'language': u'looxii'}
+        one = mysite.search.view_helpers.Query.create_from_GET_data(GET_data_1)
+        two = mysite.search.view_helpers.Query.create_from_GET_data(GET_data_2)
+        self.assertEqual(one.get_sha1(), two.get_sha1())
 
-#     def test_queries_with_different_data_hash_differently(self):
-#         GET_data_1 = {u'q': u'socialguides zetapage', u'language': u'looxii'}
-#         GET_data_2 = {u'q': u'socialguides ninjapost', u'language': u'looxii'}
-#         one = mysite.search.view_helpers.Query.create_from_GET_data(GET_data_1)
-#         two = mysite.search.view_helpers.Query.create_from_GET_data(GET_data_2)
-#         self.assertNotEqual(one.get_sha1(), two.get_sha1())
+    def test_queries_with_different_data_hash_differently(self):
+        GET_data_1 = {u'q': u'socialguides zetapage', u'language': u'looxii'}
+        GET_data_2 = {u'q': u'socialguides ninjapost', u'language': u'looxii'}
+        one = mysite.search.view_helpers.Query.create_from_GET_data(GET_data_1)
+        two = mysite.search.view_helpers.Query.create_from_GET_data(GET_data_2)
+        self.assertNotEqual(one.get_sha1(), two.get_sha1())
 
-#     # How on earth do we test for collisions?
+    # How on earth do we test for collisions?
 
 
 class FakeCache(object):
