@@ -93,19 +93,18 @@ class SearchTest(WebTest):
                 raise
 
 
-# class TestThatQueryTokenizesRespectingQuotationMarks(TwillTests):
+class TestThatQueryTokenizesRespectingQuotationMarks(WebTest):
 
-#     def test(self):
-#         difficult = "With spaces (and parens)"
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(
-#             {u'q': u'"%s"' % difficult})
-#         self.assertEqual(query.terms, [difficult])
-#         # Make there be a bug to find
-#         project = Project.create_dummy(name=difficult)
-#         Bug.create_dummy(project=project)
-#         # How many bugs?
-#         num_bugs = query.get_bugs_unordered().count()
-#         self.assertEqual(num_bugs, 1)
+    def test(self):
+        difficult = "With spaces (and parens)"
+        query = mysite.search.view_helpers.Query.create_from_GET_data({u'q': u'"%s"' % difficult})
+        self.assertEqual(query.terms, [difficult])
+        # Make there be a bug to find
+        project = Project.create_dummy(name=difficult)
+        Bug.create_dummy(project=project)
+        # How many bugs?
+        num_bugs = query.get_bugs_unordered().count()
+        self.assertEqual(num_bugs, 1)
 
 
 # class SearchResults(TwillTests):
@@ -317,515 +316,507 @@ class SplitIntoTerms(TestCase):
 #         self.assertEqual(p.icon_smaller_for_badge.height, 11)
 
 
-# class SearchOnFullWords(SearchTest):
-
-#     @skipIf(django.db.connection.vendor == 'sqlite',
-#             "Skipping because using sqlite database")
-#     @expectedFailure
-#     def test_find_perl_not_properly(self):
-#         Project.create_dummy()
-#         Bug.create_dummy(description='properly')
-#         perl_bug = Bug.create_dummy(description='perl')
-#         self.assertEqual(Bug.all_bugs.all().count(), 2)
-#         results = mysite.search.view_helpers.Query(
-#             terms=['perl']).get_bugs_unordered()
-#         self.assertEqual(list(results), [perl_bug])
-
-
-# class SearchTemplateDecodesQueryString(SearchTest):
-
-#     def test_facets_appear_in_search_template_context(self):
-#         response = self.client.get('/search/', {'language': 'Python'})
-#         expected_facets = {'language': 'Python'}
-#         self.assertEqual(response.context['query'].active_facet_options,
-#                          expected_facets)
-
-
-# class FacetsFilterResults(SearchTest):
-
-#     def test_facets_filter_results(self):
-#         facets = {u'language': u'Python'}
-
-#         # Those facets should pick up this bug:
-#         python_project = Project.create_dummy(language='Python')
-#         python_bug = Bug.create_dummy(project=python_project)
-
-#         # But not this bug
-#         not_python_project = Project.create_dummy(language='Nohtyp')
-#         Bug.create_dummy(project=not_python_project)
-
-#         results = mysite.search.view_helpers.Query(
-#             terms=[], active_facet_options=facets).get_bugs_unordered()
-#         self.assertEqual(list(results), [python_bug])
-
-#     def test_any_facet(self):
-#         """In the search_index() method in the search module, the
-#         truthfulness of the Query object is evaluated to determine whether
-#         or not any results should be returned.
-
-#         Here, we test that if a facet in the GET data is the empty string,
-#         the query is still considered to be True. A facet
-#         set to the empty string is used to signify that the user selected the
-#         "any" option on the search page.
-
-#         If a facet is not provided at all, the user did not select anything
-#         on the search page, meaning no results should be returned.
-#         """
-
-#         language_query = mysite.search.view_helpers.Query.create_from_GET_data(
-#             {'language': ''})
-#         project_query = mysite.search.view_helpers.Query.create_from_GET_data(
-#             {'project': ''})
-
-#         self.assertTrue(language_query)
-#         self.assertTrue(project_query)
-
-
-# class QueryGetPossibleFacets(SearchTest):
-
-#     """Ask a query, what facets are you going to show on the left?
-#     E.g., search for gtk, it says C (541)."""
-
-#     def test_get_possible_facets(self):
-#         # Create three projects
-#         project1 = Project.create_dummy(language=u'c')
-#         project2 = Project.create_dummy(language=u'd')
-#         project3 = Project.create_dummy(language=u'e')
-
-#         # Give each project a bug
-#         Bug.create_dummy(project=project1, description=u'bug',
-#                          good_for_newcomers=True)
-#         Bug.create_dummy(project=project2, description=u'bug')
-#         Bug.create_dummy(project=project3, description=u'bAg')
-
-#         # Search for bugs matching "bug", while constraining to the language C
-#         query = mysite.search.view_helpers.Query(
-#             terms=[u'bug'],
-#             terms_string=u'bug',
-#             active_facet_options={u'language': u'c'})
-#         possible_facets = dict(query.get_possible_facets())
-
-#         self.assertEqual(query.get_bugs_unordered().count(), 1)
-
-#         # We expect that, language-wise, you should be able to select any of
-#         # the other languages, or 'deselect' your language constraint.
-#         self.compare_lists_of_dicts(
-#             possible_facets[u'language'][u'options'],
-#             [
-#                 {u'name': u'c', u'query_string': u'q=bug&language=c',
-#                  u'is_active': True, u'count': 1},
-#                 {u'name': u'd', u'query_string': u'q=bug&language=d',
-#                  u'is_active': False, u'count': 1},
-#                 # e is excluded because its bug (u'bAg') doesn't match the
-#                 # term 'bug'
-#             ],
-#             sort_key=u'name'
-#         )
-
-#         self.compare_lists_of_dicts(
-#             possible_facets[u'toughness'][u'options'],
-#             [
-#                 # There's no 'any' option for toughness unless you've
-#                 # selected a specific toughness value
-#                 {u'name': u'bitesize',
-#                  u'is_active': False,
-#                  u'query_string': u'q=bug&toughness=bitesize&language=c',
-#                  u'count': 1},
-#             ],
-#             sort_key=u'name'
-#         )
-
-#         self.assertEqual(
-#             possible_facets['language']['the_any_option'],
-#             {u'name': u'any', u'query_string': u'q=bug&language=',
-#              u'is_active': False, u'count': 2},
-#         )
-
-#     def test_possible_facets_always_includes_active_facet(self):
-#         # even when active facet has no results.
-#         c = Project.create_dummy(language=u'c')
-#         Project.create_dummy(language=u'd')
-#         Project.create_dummy(language=u'e')
-#         Bug.create_dummy(project=c, description=u'bug')
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(
-#             {u'q': u'nothing matches this', u'language': u'c'})
-
-#         language_options = dict(
-#             query.get_possible_facets())['language']['options']
-#         language_options_named_c = [
-#             opt for opt in language_options if opt['name'] == 'c']
-#         self.assertEqual(len(language_options_named_c), 1)
-
-
-# class SingleTerm(SearchTest):
-
-#     """Search for just a single term."""
-
-#     def setUp(self):
-#         SearchTest.setUp(self)
-#         python_project = Project.create_dummy(language='Python')
-#         perl_project = Project.create_dummy(language='Perl')
-#         c_project = Project.create_dummy(language='C')
-
-#         # bitesize, matching bug in Python
-#         Bug.create_dummy(project=python_project, good_for_newcomers=True,
-#                          description='screensaver')
-
-#         # nonbitesize, matching bug in Python
-#         Bug.create_dummy(project=python_project, good_for_newcomers=False,
-#                          description='screensaver')
-
-#         # nonbitesize, matching bug in Perl
-#         Bug.create_dummy(project=perl_project, good_for_newcomers=False,
-#                          description='screensaver')
-
-#         # nonbitesize, nonmatching bug in C
-#         Bug.create_dummy(project=c_project, good_for_newcomers=False,
-#                          description='toast')
-
-#         GET_data = {'q': 'screensaver'}
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         self.assertEqual(query.terms, ['screensaver'])
-#         self.assertFalse(query.active_facet_options)  # No facets
-
-#         self.output_possible_facets = dict(query.get_possible_facets())
-
-#     def test_toughness_facet(self):
-#         # What options do we expect?
-#         toughness_option_bitesize = {
-#             'name': 'bitesize',
-#             'count': 1,
-#             'is_active': False,
-#             'query_string': 'q=screensaver&toughness=bitesize'
-#         }
-#         toughness_option_any = {
-#             'name': 'any',
-#             'count': 3,
-#             'is_active': True,
-#             'query_string': 'q=screensaver&toughness='
-#         }
-#         expected_toughness_facet_options = [toughness_option_bitesize]
-
-#         self.assertEqual(
-#             self.output_possible_facets['toughness']['options'],
-#             expected_toughness_facet_options
-#         )
-#         self.assertEqual(
-#             self.output_possible_facets['toughness']['the_any_option'],
-#             toughness_option_any
-#         )
-
-#     def test_languages_facet(self):
-#         # What options do we expect?
-#         languages_option_python = {
-#             'name': 'Python',
-#             'count': 2,
-#             'is_active': False,
-#             'query_string': 'q=screensaver&language=Python'
-#         }
-#         languages_option_perl = {
-#             'name': 'Perl',
-#             'count': 1,
-#             'is_active': False,
-#             'query_string': 'q=screensaver&language=Perl'
-#         }
-#         languages_option_any = {
-#             'name': 'any',
-#             'count': 3,
-#             'is_active': True,
-#             'query_string': 'q=screensaver&language='
-#         }
-#         expected_languages_facet_options = [
-#             languages_option_python,
-#             languages_option_perl,
-#         ]
-
-#         self.compare_lists_of_dicts(
-#             self.output_possible_facets['language']['options'],
-#             expected_languages_facet_options
-#         )
-
-#         self.assertEqual(
-#             self.output_possible_facets['language']['the_any_option'],
-#             languages_option_any)
-
-
-# class SingleFacetOption(SearchTest):
-
-#     """Browse bugs matching a single facet option."""
-
-#     def setUp(self):
-#         SearchTest.setUp(self)
-#         python_project = Project.create_dummy(language='Python')
-#         perl_project = Project.create_dummy(language='Perl')
-#         c_project = Project.create_dummy(language='C')
-
-#         # bitesize, matching bug in Python
-#         Bug.create_dummy(project=python_project, good_for_newcomers=True,
-#                          description='screensaver')
-
-#         # nonbitesize, matching bug in Python
-#         Bug.create_dummy(project=python_project, good_for_newcomers=False,
-#                          description='screensaver')
-
-#         # nonbitesize, matching bug in Perl
-#         Bug.create_dummy(project=perl_project, good_for_newcomers=False,
-#                          description='screensaver')
-
-#         # nonbitesize, nonmatching bug in C
-#         Bug.create_dummy(project=c_project, good_for_newcomers=False,
-#                          description='toast')
-
-#         GET_data = {u'language': u'Python'}
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         self.assertFalse(query.terms)  # No terms
-#         self.assertEqual(query.active_facet_options, {u'language': u'Python'})
-
-#         self.output_possible_facets = dict(query.get_possible_facets())
-
-#     def test_toughness_facet(self):
-#         # What options do we expect?
-#         toughness_option_bitesize = {
-#             u'name': u'bitesize',
-#             u'count': 1,
-#             u'is_active': False,
-#             u'query_string': u'q=&toughness=bitesize&language=Python'
-#         }
-#         toughness_option_any = {
-#             u'name': u'any',
-#             u'count': 2,
-#             u'is_active': True,
-#             u'query_string': u'q=&toughness=&language=Python'
-#         }
-#         expected_toughness_facet_options = [toughness_option_bitesize]
-
-#         self.compare_lists_of_dicts(
-#             self.output_possible_facets[u'toughness'][u'options'],
-#             expected_toughness_facet_options
-#         )
-#         self.assertEqual(
-#             self.output_possible_facets[u'toughness'][u'the_any_option'],
-#             toughness_option_any
-#         )
-
-#     def test_languages_facet(self):
-#         # What options do we expect?
-#         languages_option_python = {
-#             u'name': u'Python',
-#             u'count': 2,
-#             u'is_active': True,
-#             u'query_string': u'q=&language=Python'
-#         }
-#         languages_option_perl = {
-#             u'name': u'Perl',
-#             u'count': 1,
-#             u'is_active': False,
-#             u'query_string': u'q=&language=Perl'
-#         }
-#         languages_option_c = {
-#             u'name': u'C',
-#             u'count': 1,
-#             u'is_active': False,
-#             u'query_string': u'q=&language=C'
-#         }
-#         languages_option_any = {
-#             u'name': u'any',
-#             u'count': 4,
-#             u'is_active': False,
-#             u'query_string': u'q=&language='
-#         }
-#         expected_languages_facet_options = [
-#             languages_option_python,
-#             languages_option_perl,
-#             languages_option_c,
-#         ]
-
-#         self.compare_lists_of_dicts(
-#             self.output_possible_facets[u'language'][u'options'],
-#             expected_languages_facet_options
-#         )
-
-#         self.assertEqual(
-#             self.output_possible_facets[u'language'][u'the_any_option'],
-#             languages_option_any,
-#         )
-
-
-# class QueryGetToughnessFacetOptions(SearchTest):
-
-#     def test_get_toughness_facet_options(self):
-#         # We create three "bitesize" bugs, but constrain the Query so
-#         # that we're only looking at bugs in Python.
-
-#         # Since only two of the bitesize bugs are in Python (one is
-#         # in a project whose language is Perl), we expect only 1 bitesize
-#         # bug to show up, and 2 total bugs.
-#         python_project = Project.create_dummy(language=u'Python')
-#         perl_project = Project.create_dummy(language=u'Perl')
-
-#         Bug.create_dummy(project=python_project, good_for_newcomers=True)
-#         Bug.create_dummy(project=python_project, good_for_newcomers=False)
-#         Bug.create_dummy(project=perl_project, good_for_newcomers=True)
-
-#         query = mysite.search.view_helpers.Query(
-#             active_facet_options={u'language': u'Python'},
-#             terms_string=u'')
-#         output = query.get_facet_options(u'toughness', [u'bitesize', u''])
-#         bitesize_dict = [d for d in output if d[u'name'] == u'bitesize'][0]
-#         all_dict = [d for d in output if d[u'name'] == u'any'][0]
-#         self.assertEqual(bitesize_dict[u'count'], 1)
-#         self.assertEqual(all_dict[u'count'], 2)
-
-#     @skipIf(django.db.connection.vendor == 'sqlite',
-#             "Skipping because using sqlite database")
-#     @expectedFailure
-#     def test_get_toughness_facet_options_with_terms(self):
-
-#         python_project = Project.create_dummy(language=u'Python')
-#         perl_project = Project.create_dummy(language=u'Perl')
-
-#         Bug.create_dummy(project=python_project, good_for_newcomers=True,
-#                          description=u'a')
-
-#         Bug.create_dummy(project=python_project, good_for_newcomers=False,
-#                          description=u'a')
-
-#         Bug.create_dummy(project=perl_project, good_for_newcomers=True,
-#                          description=u'b')
-
-#         GET_data = {u'q': u'a'}
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         output = query.get_facet_options(u'toughness', [u'bitesize', u''])
-#         bitesize_dict = [d for d in output if d[u'name'] == u'bitesize'][0]
-#         all_dict = [d for d in output if d[u'name'] == u'any'][0]
-#         self.assertEqual(bitesize_dict[u'count'], 1)
-#         self.assertEqual(all_dict[u'count'], 2)
-
-
-# class QueryGetPossibleLanguageFacetOptionNames(SearchTest):
-
-#     def setUp(self):
-#         SearchTest.setUp(self)
-#         python_project = Project.create_dummy(language=u'Python')
-#         perl_project = Project.create_dummy(language=u'Perl')
-#         c_project = Project.create_dummy(language=u'C')
-#         unknown_project = Project.create_dummy(language=u'')
-
-#         Bug.create_dummy(project=python_project, title=u'a')
-#         Bug.create_dummy(project=perl_project, title=u'a')
-#         Bug.create_dummy(project=c_project, title=u'b')
-#         Bug.create_dummy(project=unknown_project, title=u'unknowable')
-
-#     @skipIf(django.db.connection.vendor == 'sqlite',
-#             "Skipping because using sqlite database")
-#     @expectedFailure
-#     def test_with_term(self):
-#         # In the setUp we create three bugs, but only two of them would match
-#         # a search for 'a'. They are in two different languages, so let's make
-#         # sure that we show only those two languages.
-#         GET_data = {u'q': u'a'}
-
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         language_names = query.get_language_names()
-#         self.assertEqual(
-#             sorted(language_names),
-#             sorted([u'Python', u'Perl']))
-
-#     def test_with_active_language_facet(self):
-#         # In the setUp we create bugs in three languages.
-#         # Here, we verify that the get_language_names() method correctly
-#         # returns all three languages, even though the GET data shows that
-#         # we are browsing by language.
-
-#         GET_data = {u'language': u'Python'}
-
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         language_names = query.get_language_names()
-#         self.assertEqual(
-#             sorted(language_names),
-#             sorted([u'Python', u'Perl', u'C', u'Unknown']))
-
-#     def test_with_language_as_unknown(self):
-#         # In the setUp we create bugs in three languages.
-#         # Here, we verify that the get_language_names() method correctly
-#         # returns all three languages, even though the GET data shows that
-#         # we are browsing by language.
-
-#         GET_data = {u'language': u'Unknown'}
-
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         language_names = query.get_language_names()
-#         self.assertEqual(
-#             sorted(language_names),
-#             sorted([u'Python', u'Perl', u'C', u'Unknown']))
-
-#     def test_with_language_as_unknown_and_query(self):
-#         # In the setUp we create bugs in three languages.
-#         # Here, we verify that the get_language_names() method correctly
-#         # returns all three languages, even though the GET data shows that
-#         # we are browsing by language.
-
-#         GET_data = {u'language': u'Unknown', u'q': u'unknowable'}
-
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         match_count = query.get_bugs_unordered().count()
-
-#         self.assertEqual(match_count, 1)
-
-
-# class QueryGetPossibleProjectFacetOptions(SearchTest):
-
-#     def setUp(self):
-#         SearchTest.setUp(self)
-#         projects = [
-#             Project.create_dummy(name=u'Miro'),
-#             Project.create_dummy(name=u'Dali'),
-#             Project.create_dummy(name=u'Magritte')
-#         ]
-#         for p in projects:
-#             Bug.create_dummy(project=p)
-
-#     def test_select_a_project_and_see_other_project_options(self):
-#         GET_data = {u'project': u'Miro'}
-#         query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
-#         possible_project_names = [x['name'] for x in dict(
-#             query.get_possible_facets())['project']['options']]
-#         self.assertEqual(
-#             sorted(possible_project_names),
-#             sorted(list(Project.objects.values_list('name', flat=True))))
-
-
-# class QueryContributionType(SearchTest):
-
-#     def setUp(self):
-#         SearchTest.setUp(self)
-#         python_project = Project.create_dummy(language=u'Python')
-#         perl_project = Project.create_dummy(language=u'Perl')
-#         c_project = Project.create_dummy(language=u'C')
-
-#         Bug.create_dummy(project=python_project, title=u'a')
-#         Bug.create_dummy(project=perl_project, title=u'a',
-#                          concerns_just_documentation=True)
-#         Bug.create_dummy(project=c_project, title=u'b')
-
-#     def test_contribution_type_is_an_available_facet(self):
-#         GET_data = {}
-#         starting_query = mysite.search.view_helpers.Query.create_from_GET_data(
-#             GET_data)
-#         self.assert_(
-#             u'contribution_type' in dict(starting_query.get_possible_facets()))
-
-#     def test_contribution_type_options_are_reasonable(self):
-#         GET_data = {}
-#         starting_query = mysite.search.view_helpers.Query.create_from_GET_data(
-#             GET_data)
-#         cto = starting_query.get_facet_options(u'contribution_type',
-#                                                [u'documentation'])
-#         documentation_one, = [k for k in cto if k[u'name'] == u'documentation']
-#         any_one = starting_query.get_facet_options(
-#             u'contribution_type', [u''])[0]
-#         self.assertEqual(documentation_one[u'count'], 1)
-#         self.assertEqual(any_one[u'count'], 3)
+class SearchOnFullWords(SearchTest):
+
+    @skipIf(django.db.connection.vendor == 'sqlite',
+            "Skipping because using sqlite database")
+    @expectedFailure
+    def test_find_perl_not_properly(self):
+        Project.create_dummy()
+        Bug.create_dummy(description='properly')
+        perl_bug = Bug.create_dummy(description='perl')
+        self.assertEqual(Bug.all_bugs.all().count(), 2)
+        results = mysite.search.view_helpers.Query(terms=['perl']).get_bugs_unordered()
+        self.assertEqual(list(results), [perl_bug])
+
+
+class SearchTemplateDecodesQueryString(SearchTest):
+
+    def test_facets_appear_in_search_template_context(self):
+        response = self.client.get('/search/', {'language': 'Python'})
+        expected_facets = {'language': 'Python'}
+        self.assertEqual(response.context['query'].active_facet_options,
+                         expected_facets)
+
+
+class FacetsFilterResults(SearchTest):
+
+    def test_facets_filter_results(self):
+        facets = {u'language': u'Python'}
+
+        # Those facets should pick up this bug:
+        python_project = Project.create_dummy(language='Python')
+        python_bug = Bug.create_dummy(project=python_project)
+
+        # But not this bug
+        not_python_project = Project.create_dummy(language='Nohtyp')
+        Bug.create_dummy(project=not_python_project)
+
+        results = mysite.search.view_helpers.Query(
+            terms=[], active_facet_options=facets).get_bugs_unordered()
+        self.assertEqual(list(results), [python_bug])
+
+    def test_any_facet(self):
+        """In the search_index() method in the search module, the
+        truthfulness of the Query object is evaluated to determine whether
+        or not any results should be returned.
+
+        Here, we test that if a facet in the GET data is the empty string,
+        the query is still considered to be True. A facet
+        set to the empty string is used to signify that the user selected the
+        "any" option on the search page.
+
+        If a facet is not provided at all, the user did not select anything
+        on the search page, meaning no results should be returned.
+        """
+
+        language_query = mysite.search.view_helpers.Query.create_from_GET_data(
+            {'language': ''})
+        project_query = mysite.search.view_helpers.Query.create_from_GET_data(
+            {'project': ''})
+
+        self.assertTrue(language_query)
+        self.assertTrue(project_query)
+
+
+class QueryGetPossibleFacets(SearchTest):
+
+    """Ask a query, what facets are you going to show on the left?
+    E.g., search for gtk, it says C (541)."""
+
+    def test_get_possible_facets(self):
+        # Create three projects
+        project1 = Project.create_dummy(language=u'c')
+        project2 = Project.create_dummy(language=u'd')
+        project3 = Project.create_dummy(language=u'e')
+
+        # Give each project a bug
+        Bug.create_dummy(project=project1, description=u'bug',
+                         good_for_newcomers=True)
+        Bug.create_dummy(project=project2, description=u'bug')
+        Bug.create_dummy(project=project3, description=u'bAg')
+
+        # Search for bugs matching "bug", while constraining to the language C
+        query = mysite.search.view_helpers.Query(
+            terms=[u'bug'],
+            terms_string=u'bug',
+            active_facet_options={u'language': u'c'})
+        possible_facets = dict(query.get_possible_facets())
+
+        self.assertEqual(query.get_bugs_unordered().count(), 1)
+
+        # We expect that, language-wise, you should be able to select any of
+        # the other languages, or 'deselect' your language constraint.
+        self.compare_lists_of_dicts(
+            possible_facets[u'language'][u'options'],
+            [
+                {u'name': u'c', u'query_string': u'q=bug&language=c',
+                 u'is_active': True, u'count': 1},
+                {u'name': u'd', u'query_string': u'q=bug&language=d',
+                 u'is_active': False, u'count': 1},
+                # e is excluded because its bug (u'bAg') doesn't match the
+                # term 'bug'
+            ],
+            sort_key=u'name'
+        )
+
+        self.compare_lists_of_dicts(
+            possible_facets[u'toughness'][u'options'],
+            [
+                # There's no 'any' option for toughness unless you've
+                # selected a specific toughness value
+                {u'name': u'bitesize',
+                 u'is_active': False,
+                 u'query_string': u'q=bug&toughness=bitesize&language=c',
+                 u'count': 1},
+            ],
+            sort_key=u'name'
+        )
+
+        self.assertEqual(
+            possible_facets['language']['the_any_option'],
+            {u'name': u'any', u'query_string': u'q=bug&language=',
+             u'is_active': False, u'count': 2},
+        )
+
+    def test_possible_facets_always_includes_active_facet(self):
+        # even when active facet has no results.
+        c = Project.create_dummy(language=u'c')
+        Project.create_dummy(language=u'd')
+        Project.create_dummy(language=u'e')
+        Bug.create_dummy(project=c, description=u'bug')
+        query = mysite.search.view_helpers.Query.create_from_GET_data(
+            {u'q': u'nothing matches this', u'language': u'c'})
+
+        language_options = dict(
+            query.get_possible_facets())['language']['options']
+        language_options_named_c = [
+            opt for opt in language_options if opt['name'] == 'c']
+        self.assertEqual(len(language_options_named_c), 1)
+
+
+class SingleTerm(SearchTest):
+
+    """Search for just a single term."""
+
+    def setUp(self):
+        SearchTest.setUp(self)
+        python_project = Project.create_dummy(language='Python')
+        perl_project = Project.create_dummy(language='Perl')
+        c_project = Project.create_dummy(language='C')
+
+        # bitesize, matching bug in Python
+        Bug.create_dummy(project=python_project, good_for_newcomers=True,
+                         description='screensaver')
+
+        # nonbitesize, matching bug in Python
+        Bug.create_dummy(project=python_project, good_for_newcomers=False,
+                         description='screensaver')
+
+        # nonbitesize, matching bug in Perl
+        Bug.create_dummy(project=perl_project, good_for_newcomers=False,
+                         description='screensaver')
+
+        # nonbitesize, nonmatching bug in C
+        Bug.create_dummy(project=c_project, good_for_newcomers=False,
+                         description='toast')
+
+        GET_data = {'q': 'screensaver'}
+        query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        self.assertEqual(query.terms, ['screensaver'])
+        self.assertFalse(query.active_facet_options)  # No facets
+
+        self.output_possible_facets = dict(query.get_possible_facets())
+
+    def test_toughness_facet(self):
+        # What options do we expect?
+        toughness_option_bitesize = {
+            'name': 'bitesize',
+            'count': 1,
+            'is_active': False,
+            'query_string': 'q=screensaver&toughness=bitesize'
+        }
+        toughness_option_any = {
+            'name': 'any',
+            'count': 3,
+            'is_active': True,
+            'query_string': 'q=screensaver&toughness='
+        }
+        expected_toughness_facet_options = [toughness_option_bitesize]
+
+        self.assertEqual(
+            self.output_possible_facets['toughness']['options'],
+            expected_toughness_facet_options
+        )
+        self.assertEqual(
+            self.output_possible_facets['toughness']['the_any_option'],
+            toughness_option_any
+        )
+
+    def test_languages_facet(self):
+        # What options do we expect?
+        languages_option_python = {
+            'name': 'Python',
+            'count': 2,
+            'is_active': False,
+            'query_string': 'q=screensaver&language=Python'
+        }
+        languages_option_perl = {
+            'name': 'Perl',
+            'count': 1,
+            'is_active': False,
+            'query_string': 'q=screensaver&language=Perl'
+        }
+        languages_option_any = {
+            'name': 'any',
+            'count': 3,
+            'is_active': True,
+            'query_string': 'q=screensaver&language='
+        }
+        expected_languages_facet_options = [
+            languages_option_python,
+            languages_option_perl,
+        ]
+
+        self.compare_lists_of_dicts(
+            self.output_possible_facets['language']['options'],
+            expected_languages_facet_options
+        )
+
+        self.assertEqual(
+            self.output_possible_facets['language']['the_any_option'],
+            languages_option_any)
+
+
+class SingleFacetOption(SearchTest):
+
+    """Browse bugs matching a single facet option."""
+
+    def setUp(self):
+        SearchTest.setUp(self)
+        python_project = Project.create_dummy(language='Python')
+        perl_project = Project.create_dummy(language='Perl')
+        c_project = Project.create_dummy(language='C')
+
+        # bitesize, matching bug in Python
+        Bug.create_dummy(project=python_project, good_for_newcomers=True,
+                         description='screensaver')
+
+        # nonbitesize, matching bug in Python
+        Bug.create_dummy(project=python_project, good_for_newcomers=False,
+                         description='screensaver')
+
+        # nonbitesize, matching bug in Perl
+        Bug.create_dummy(project=perl_project, good_for_newcomers=False,
+                         description='screensaver')
+
+        # nonbitesize, nonmatching bug in C
+        Bug.create_dummy(project=c_project, good_for_newcomers=False,
+                         description='toast')
+
+        GET_data = {u'language': u'Python'}
+        query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        self.assertFalse(query.terms)  # No terms
+        self.assertEqual(query.active_facet_options, {u'language': u'Python'})
+
+        self.output_possible_facets = dict(query.get_possible_facets())
+
+    def test_toughness_facet(self):
+        # What options do we expect?
+        toughness_option_bitesize = {
+            u'name': u'bitesize',
+            u'count': 1,
+            u'is_active': False,
+            u'query_string': u'q=&toughness=bitesize&language=Python'
+        }
+        toughness_option_any = {
+            u'name': u'any',
+            u'count': 2,
+            u'is_active': True,
+            u'query_string': u'q=&toughness=&language=Python'
+        }
+        expected_toughness_facet_options = [toughness_option_bitesize]
+
+        self.compare_lists_of_dicts(
+            self.output_possible_facets[u'toughness'][u'options'],
+            expected_toughness_facet_options
+        )
+        self.assertEqual(
+            self.output_possible_facets[u'toughness'][u'the_any_option'],
+            toughness_option_any
+        )
+
+    def test_languages_facet(self):
+        # What options do we expect?
+        languages_option_python = {
+            u'name': u'Python',
+            u'count': 2,
+            u'is_active': True,
+            u'query_string': u'q=&language=Python'
+        }
+        languages_option_perl = {
+            u'name': u'Perl',
+            u'count': 1,
+            u'is_active': False,
+            u'query_string': u'q=&language=Perl'
+        }
+        languages_option_c = {
+            u'name': u'C',
+            u'count': 1,
+            u'is_active': False,
+            u'query_string': u'q=&language=C'
+        }
+        languages_option_any = {
+            u'name': u'any',
+            u'count': 4,
+            u'is_active': False,
+            u'query_string': u'q=&language='
+        }
+        expected_languages_facet_options = [
+            languages_option_python,
+            languages_option_perl,
+            languages_option_c,
+        ]
+
+        self.compare_lists_of_dicts(
+            self.output_possible_facets[u'language'][u'options'],
+            expected_languages_facet_options
+        )
+
+        self.assertEqual(
+            self.output_possible_facets[u'language'][u'the_any_option'],
+            languages_option_any,
+        )
+
+
+class QueryGetToughnessFacetOptions(SearchTest):
+
+    def test_get_toughness_facet_options(self):
+        # We create three "bitesize" bugs, but constrain the Query so
+        # that we're only looking at bugs in Python.
+
+        # Since only two of the bitesize bugs are in Python (one is
+        # in a project whose language is Perl), we expect only 1 bitesize
+        # bug to show up, and 2 total bugs.
+        python_project = Project.create_dummy(language=u'Python')
+        perl_project = Project.create_dummy(language=u'Perl')
+
+        Bug.create_dummy(project=python_project, good_for_newcomers=True)
+        Bug.create_dummy(project=python_project, good_for_newcomers=False)
+        Bug.create_dummy(project=perl_project, good_for_newcomers=True)
+
+        query = mysite.search.view_helpers.Query(active_facet_options={u'language': u'Python'},terms_string=u'')
+        output = query.get_facet_options(u'toughness', [u'bitesize', u''])
+        bitesize_dict = [d for d in output if d[u'name'] == u'bitesize'][0]
+        all_dict = [d for d in output if d[u'name'] == u'any'][0]
+        self.assertEqual(bitesize_dict[u'count'], 1)
+        self.assertEqual(all_dict[u'count'], 2)
+
+    @skipIf(django.db.connection.vendor == 'sqlite',
+            "Skipping because using sqlite database")
+    @expectedFailure
+    def test_get_toughness_facet_options_with_terms(self):
+
+        python_project = Project.create_dummy(language=u'Python')
+        perl_project = Project.create_dummy(language=u'Perl')
+
+        Bug.create_dummy(project=python_project, good_for_newcomers=True, description=u'a')
+        Bug.create_dummy(project=python_project, good_for_newcomers=False, description=u'a')
+        Bug.create_dummy(project=perl_project, good_for_newcomers=True, description=u'b')
+
+        GET_data = {u'q': u'a'}
+        query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        output = query.get_facet_options(u'toughness', [u'bitesize', u''])
+        bitesize_dict = [d for d in output if d[u'name'] == u'bitesize'][0]
+        all_dict = [d for d in output if d[u'name'] == u'any'][0]
+        self.assertEqual(bitesize_dict[u'count'], 1)
+        self.assertEqual(all_dict[u'count'], 2)
+
+
+class QueryGetPossibleLanguageFacetOptionNames(SearchTest):
+
+    def setUp(self):
+        SearchTest.setUp(self)
+        python_project = Project.create_dummy(language=u'Python')
+        perl_project = Project.create_dummy(language=u'Perl')
+        c_project = Project.create_dummy(language=u'C')
+        unknown_project = Project.create_dummy(language=u'')
+
+        Bug.create_dummy(project=python_project, title=u'a')
+        Bug.create_dummy(project=perl_project, title=u'a')
+        Bug.create_dummy(project=c_project, title=u'b')
+        Bug.create_dummy(project=unknown_project, title=u'unknowable')
+
+    @skipIf(django.db.connection.vendor == 'sqlite',
+            "Skipping because using sqlite database")
+    @expectedFailure
+    def test_with_term(self):
+        # In the setUp we create three bugs, but only two of them would match
+        # a search for 'a'. They are in two different languages, so let's make
+        # sure that we show only those two languages.
+        GET_data = {u'q': u'a'}
+
+        query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        language_names = query.get_language_names()
+        self.assertEqual(
+            sorted(language_names),
+            sorted([u'Python', u'Perl']))
+
+    def test_with_active_language_facet(self):
+        # In the setUp we create bugs in three languages.
+        # Here, we verify that the get_language_names() method correctly
+        # returns all three languages, even though the GET data shows that
+        # we are browsing by language.
+
+        GET_data = {u'language': u'Python'}
+
+        query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        language_names = query.get_language_names()
+        self.assertEqual(
+            sorted(language_names),
+            sorted([u'Python', u'Perl', u'C', u'Unknown']))
+
+    def test_with_language_as_unknown(self):
+        # In the setUp we create bugs in three languages.
+        # Here, we verify that the get_language_names() method correctly
+        # returns all three languages, even though the GET data shows that
+        # we are browsing by language.
+
+        GET_data = {u'language': u'Unknown'}
+
+        query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        language_names = query.get_language_names()
+        self.assertEqual(
+            sorted(language_names),
+            sorted([u'Python', u'Perl', u'C', u'Unknown']))
+
+    def test_with_language_as_unknown_and_query(self):
+        # In the setUp we create bugs in three languages.
+        # Here, we verify that the get_language_names() method correctly
+        # returns all three languages, even though the GET data shows that
+        # we are browsing by language.
+
+        GET_data = {u'language': u'Unknown', u'q': u'unknowable'}
+
+        query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        match_count = query.get_bugs_unordered().count()
+
+        self.assertEqual(match_count, 1)
+
+
+class QueryGetPossibleProjectFacetOptions(SearchTest):
+
+    def setUp(self):
+        SearchTest.setUp(self)
+        projects = [
+            Project.create_dummy(name=u'Miro'),
+            Project.create_dummy(name=u'Dali'),
+            Project.create_dummy(name=u'Magritte')
+        ]
+        for p in projects:
+            Bug.create_dummy(project=p)
+
+    def test_select_a_project_and_see_other_project_options(self):
+        GET_data = {u'project': u'Miro'}
+        query = mysite.search.view_helpers.Query.create_from_GET_data(GET_data)
+        possible_project_names = [x['name'] for x in dict(
+            query.get_possible_facets())['project']['options']]
+        self.assertEqual(
+            sorted(possible_project_names),
+            sorted(list(Project.objects.values_list('name', flat=True))))
+
+
+class QueryContributionType(SearchTest):
+
+    def setUp(self):
+        SearchTest.setUp(self)
+        python_project = Project.create_dummy(language=u'Python')
+        perl_project = Project.create_dummy(language=u'Perl')
+        c_project = Project.create_dummy(language=u'C')
+
+        Bug.create_dummy(project=python_project, title=u'a')
+        Bug.create_dummy(project=perl_project, title=u'a',
+                         concerns_just_documentation=True)
+        Bug.create_dummy(project=c_project, title=u'b')
+
+    def test_contribution_type_is_an_available_facet(self):
+        GET_data = {}
+        starting_query = mysite.search.view_helpers.Query.create_from_GET_data(
+            GET_data)
+        self.assert_(
+            u'contribution_type' in dict(starting_query.get_possible_facets()))
+
+    def test_contribution_type_options_are_reasonable(self):
+        GET_data = {}
+        starting_query = mysite.search.view_helpers.Query.create_from_GET_data(
+            GET_data)
+        cto = starting_query.get_facet_options(u'contribution_type',
+                                               [u'documentation'])
+        documentation_one, = [k for k in cto if k[u'name'] == u'documentation']
+        any_one = starting_query.get_facet_options(
+            u'contribution_type', [u''])[0]
+        self.assertEqual(documentation_one[u'count'], 1)
+        self.assertEqual(any_one[u'count'], 3)
 
 
 # class QueryProject(SearchTest):
@@ -897,16 +888,16 @@ class SplitIntoTerms(TestCase):
 #     # How on earth do we test for collisions?
 
 
-# class FakeCache(object):
+class FakeCache(object):
 
-#     def __init__(self):
-#         self._data = {}
+    def __init__(self):
+        self._data = {}
 
-#     def get(self, key):
-#         return self._data.get(key, None)
+    def get(self, key):
+        return self._data.get(key, None)
 
-#     def set(self, key, value):
-#         self._data[key] = value
+    def set(self, key, value):
+        self._data[key] = value
 
 
 # class QueryGrabHitCount(SearchTest):
