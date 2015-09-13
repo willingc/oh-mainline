@@ -7,13 +7,9 @@ packages/decorator/src
 packages/dj-database-url
 packages/django-assets
 packages/django-debug-toolbar
-packages/django-inplaceedit
 packages/django-invitation
 packages/django-kombu
 packages/django-model-utils
-packages/django-picklefield
-packages/django-picklefield/src
-packages/django-registration
 packages/django-reversion/src
 packages/django-voting
 packages/django-webtest
@@ -40,7 +36,6 @@ packages/Pygments
 packages/PyJWT
 packages/python-dateutil
 packages/python-memcached
-packages/python-openid
 packages/python-otp
 packages/python-patch
 packages/python-social-auth
