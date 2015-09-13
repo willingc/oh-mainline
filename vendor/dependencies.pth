@@ -6,9 +6,7 @@ packages/bleach
 packages/decorator/src
 packages/dj-database-url
 packages/django-assets
-packages/django-authopenid
 packages/django-debug-toolbar
-packages/django-extensions
 packages/django-inplaceedit
 packages/django-invitation
 packages/django-kombu

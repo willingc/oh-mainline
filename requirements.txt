@@ -3,5 +3,7 @@ Django==1.5.8
 psycopg2==2.6.1
 Pillow==2.9.0
 celery==2.4.2
+django-authopenid==1.0.1
 django-celery==2.4.2
+django-extensions==0.7.1
 django-tastypie==0.12.2
