@@ -2,16 +2,13 @@ packages/BeautifulSoup
 packages/beautifulsoup4
 packages/bleach
 packages/decorator/src
-packages/dj-database-url
 packages/django-assets
 packages/django-debug-toolbar
 packages/django-kombu
 packages/django-model-utils
-packages/django-webtest
 packages/docutils
 packages/feedparser/feedparser
 packages/gdata/src
-packages/ghettoq
 packages/html2text
 packages/html5lib
 packages/importlib
