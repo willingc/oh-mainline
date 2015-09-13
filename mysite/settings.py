@@ -148,7 +148,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
-    'django_authopenid.context_processors.authopenid',
+    #'django_authopenid.context_processors.authopenid',
     'social.apps.django_app.context_processors.backends',
     'social.apps.django_app.context_processors.login_redirect',
 )
@@ -169,7 +169,7 @@ MIDDLEWARE_CLASSES = [
     'sessionprofile.middleware.SessionProfileMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_authopenid.middleware.OpenIDMiddleware',
+    #'django_authopenid.middleware.OpenIDMiddleware',
     'mysite.base.middleware.HandleWannaHelpQueue',
     'django.middleware.transaction.TransactionMiddleware',
 ]
@@ -209,7 +209,7 @@ INSTALLED_APPS = (
     'django.contrib.webdesign',
     'django.contrib.admin',
     'registration',
-    'django_authopenid',
+    #'django_authopenid',
     'django_extensions',
     'south',
     'django_assets',

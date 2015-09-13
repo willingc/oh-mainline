@@ -5,7 +5,6 @@ celery==2.4.2
 dj-database-url==0.2.0
 Django==1.5.8
 django-assets==0.11
-django-authopenid==1.0.1
 django-celery==2.4.2
 django-debug-toolbar==1.2.1
 django-extensions==0.7.1
@@ -28,7 +27,7 @@ psycopg2==2.6.1
 PyJWT==1.4.0
 python-dateutil==1.5
 python-mimeparse==0.1.4
-python-openid==2.2.5
+python-openid
 python-social-auth==0.2.9
 requests==2.7.0
 requests-oauthlib==0.5.0
