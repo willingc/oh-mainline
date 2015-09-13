@@ -7,8 +7,6 @@ packages/django-assets
 packages/django-debug-toolbar
 packages/django-kombu
 packages/django-model-utils
-packages/django-reversion/src
-packages/django-voting
 packages/django-webtest
 packages/docutils
 packages/feedparser/feedparser
