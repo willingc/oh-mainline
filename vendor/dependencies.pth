@@ -24,7 +24,6 @@ packages/python-patch
 packages/pytz
 packages/PyYaml/lib
 packages/scrapy
-packages/south
 packages/sphinx
 packages/staticgenerator
 packages/twill
