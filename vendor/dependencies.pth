@@ -4,7 +4,6 @@ packages/bleach
 packages/decorator/src
 packages/django-assets
 packages/django-debug-toolbar
-packages/django-model-utils
 packages/docutils
 packages/feedparser/feedparser
 packages/gdata/src
