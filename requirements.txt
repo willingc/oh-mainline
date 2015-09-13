@@ -13,6 +13,7 @@ django-model-utils==2.0.3
 django-picklefield==0.3.2
 django-registration==1.0
 django-reversion==1.9.3
+django-sessionprofile==0.1.2
 django-voting==0.1
 django-tastypie==0.12.2
 django-webtest==1.7.7

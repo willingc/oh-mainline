@@ -26,7 +26,6 @@ packages/python-patch
 packages/pytz
 packages/PyYaml/lib
 packages/scrapy
-packages/sessionprofile
 packages/south
 packages/sphinx
 packages/sqlparse
