@@ -39,7 +39,6 @@ packages/typecheck
 packages/unicodecsv
 packages/unittest-xml-reporting/src
 packages/webob
-packages/webtest
 packages/whoosh/src
 packages/zope.interface
 packages/zope.interface/src

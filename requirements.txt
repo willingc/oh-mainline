@@ -13,7 +13,7 @@ django-registration==1.0
 django-reversion==1.9.3
 django-voting==0.1
 django-tastypie==0.12.2
-django-webtest==
+django-webtest==1.7.7
 ghettoq==0.4.5
 kombu==2.5.16
 oauthlib==1.0.3
@@ -28,3 +28,4 @@ requests==2.7.0
 requests-oauthlib==0.5.0
 six==1.9.0
 wheel==0.24.0
+webtest==2.0.15
