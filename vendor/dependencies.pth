@@ -3,12 +3,10 @@ packages/anyjson
 packages/BeautifulSoup
 packages/beautifulsoup4
 packages/bleach
-packages/celery
 packages/decorator/src
 packages/dj-database-url
 packages/django-assets
 packages/django-authopenid
-packages/django-celery
 packages/django-debug-toolbar
 packages/django-extensions
 packages/django-inplaceedit
