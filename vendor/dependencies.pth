@@ -3,7 +3,6 @@ packages/beautifulsoup4
 packages/bleach
 packages/decorator/src
 packages/django-assets
-packages/django-debug-toolbar
 packages/docutils
 packages/feedparser/feedparser
 packages/gdata/src
