@@ -1,7 +1,6 @@
 packages/BeautifulSoup
 packages/bleach
 packages/decorator/src
-packages/django-assets
 packages/docutils
 packages/feedparser/feedparser
 packages/gdata/src
