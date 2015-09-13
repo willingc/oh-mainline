@@ -1,5 +1,4 @@
 packages/BeautifulSoup
-packages/beautifulsoup4
 packages/bleach
 packages/decorator/src
 packages/django-assets
@@ -27,7 +26,6 @@ packages/PyYaml/lib
 packages/scrapy
 packages/south
 packages/sphinx
-packages/sqlparse
 packages/staticgenerator
 packages/twill
 packages/twisted
