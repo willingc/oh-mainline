@@ -904,13 +904,13 @@ class ExportTrackerAsDict(django.test.TestCase):
 
         golden = {'documentation_text': 'documentation',
                   'documentation_type': 'keywords',
-                  'queries': ([u'http://twistedmatrix.com/trac/query?'
-                               u'status=new&status=assigned&status=reopened'
-                               u'&format=csv&keywords=%7Eeasy&order=priority',
-                               u'http://twistedmatrix.com/trac/query?'
-                               u'status=assigned&status=new&status=reopened&'
-                               u'format=csv&order=priority&'
-                               u'keywords=~documentation']),
+                  'queries': (['http://twistedmatrix.com/trac/query?'
+                               'status=new&status=assigned&status=reopened'
+                               '&format=csv&keywords=%7Eeasy&order=priority',
+                               'http://twistedmatrix.com/trac/query?'
+                               'status=assigned&status=new&status=reopened&'
+                               'format=csv&order=priority&'
+                               'keywords=~documentation']),
                   'base_url': 'http://twistedmatrix.com/trac/',
                   'bitesized_text': 'easy',
                   'bitesized_type': 'keywords',
