@@ -24,7 +24,6 @@ install:
 script: coverage run --source="mysite" manage.py test
 
 before_install:
- - deactivate
  - git config --global user.name TravisDummy
  - git config --global user.email dummy@travis-ci.org
 
