@@ -921,7 +921,7 @@ class ExportTrackerAsDict(django.test.TestCase):
                   'existing_bug_urls': [],
                   'get_older_bug_data': None,
                   }
-        self.maxdiff = None
+        self.maxDiff = None
         self.assertEqual(golden, exported)
 
     def test_export_includes_existing_bugs(self):
