@@ -901,6 +901,8 @@ class ExportTrackerAsDict(django.test.TestCase):
 
     def test_export(self):
         exported = self.tm.as_dict()
+        print("Exported")
+        print(exported)
         golden = {'documentation_text': 'documentation',
                   'documentation_type': 'keywords',
                   'queries': ([u'http://twistedmatrix.com/trac/query?'
