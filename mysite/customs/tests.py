@@ -20,43 +20,36 @@ from __future__ import absolute_import
 # GNU Affero General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-from mysite.search.models import Bug, Project
-from mysite.base.models import Timestamp
-from mysite.profile.models import Person, Tag, TagType, Link_Person_Tag
-import mysite.profile.views
-from mysite.customs import ohloh
-import mysite.customs.views
-import mysite.base.depends
-import mysite.customs.api
-import mysite.customs.core_bugimporters
-
-from django.core.urlresolvers import reverse
-
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+import datetime
 import logging
 import mock
 import os
+from StringIO import StringIO
 
-import django.test
+from django.conf import settings
 import django.contrib.auth.models
 import django.core.serializers
-from django.conf import settings
+from django.core.urlresolvers import reverse
+import django.test
 from django.test.client import Client
+from django.utils.unittest import skipIf, expectedFailure
 from django_webtest import WebTest
 
-from StringIO import StringIO
-import datetime
-
+import mysite.base.depends
+from mysite.base.models import Timestamp
+from mysite.customs import ohloh
+import mysite.customs.api
+import mysite.customs.core_bugimporters
 import mysite.customs.feed
-
-from django.utils.unittest import skipIf, expectedFailure
-
-import mysite.customs.models
 import mysite.customs.management.commands.customs_daily_tasks
 import mysite.customs.management.commands.import_bugimporter_data
 import mysite.customs.management.commands.snapshot_public_data
+import mysite.customs.models
+import mysite.customs.views
+from mysite.profile.models import Person, Tag, TagType, Link_Person_Tag
+import mysite.profile.views
+from mysite.search.models import Bug, Project
 
 logger = logging.getLogger(__name__)
 
