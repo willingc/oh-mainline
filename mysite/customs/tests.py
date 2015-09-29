@@ -900,17 +900,17 @@ class ExportTrackerAsDict(django.test.TestCase):
                 url=url, tracker=self.tm)
 
     def test_export(self):
-        exported = self.tm.as_dict()
+        exported_dict = self.tm.as_dict()
 
         golden = {'documentation_text': 'documentation',
                   'documentation_type': 'keywords',
-                  'queries': (['http://twistedmatrix.com/trac/query?'
-                               'status=new&status=assigned&status=reopened'
-                               '&format=csv&keywords=%7Eeasy&order=priority',
-                               'http://twistedmatrix.com/trac/query?'
-                               'status=assigned&status=new&status=reopened&'
-                               'format=csv&order=priority&'
-                               'keywords=~documentation']),
+                  'queries': ([u'http://twistedmatrix.com/trac/query?'
+                               u'status=new&status=assigned&status=reopened'
+                               u'&format=csv&keywords=%7Eeasy&order=priority',
+                               u'http://twistedmatrix.com/trac/query?'
+                               u'status=assigned&status=new&status=reopened&'
+                               u'format=csv&order=priority&'
+                               u'keywords=~documentation']),
                   'base_url': 'http://twistedmatrix.com/trac/',
                   'bitesized_text': 'easy',
                   'bitesized_type': 'keywords',
@@ -923,16 +923,7 @@ class ExportTrackerAsDict(django.test.TestCase):
                   'get_older_bug_data': None,
                   }
 
-        print("Exported")
-        for item in exported:
-            print(item)
-
-        print("Golden")
-        for item in golden:
-            print(item)
-
-        self.maxDiff = None
-        self.assertDictEqual(exported, golden)
+        self.assertDictEqual(exported_dict, golden)
 
     def test_export_includes_existing_bugs(self):
         # Create the list of Bug objects we'll create
