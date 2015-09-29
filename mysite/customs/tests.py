@@ -901,9 +901,6 @@ class ExportTrackerAsDict(django.test.TestCase):
 
     def test_export(self):
         exported = self.tm.as_dict()
-        print("Exported")
-        for item in exported:
-            print(item)
 
         golden = {'documentation_text': 'documentation',
                   'documentation_type': 'keywords',
@@ -926,12 +923,16 @@ class ExportTrackerAsDict(django.test.TestCase):
                   'get_older_bug_data': None,
                   }
 
+        print("Exported")
+        for item in exported:
+            print(item)
+
         print("Golden")
         for item in golden:
             print(item)
 
         self.maxDiff = None
-        self.assertE(golden, exported)
+        self.assertDictEqual(exported, golden)
 
     def test_export_includes_existing_bugs(self):
         # Create the list of Bug objects we'll create
